@@ -1,0 +1,117 @@
+{
+	"definitions": {
+		"headers": {
+			"type": "object",
+			"properties": {},
+			"additionalProperties": { "type": "string" }
+		},
+		"s3": {
+			"type": "object",
+			"properties": {
+				"bucket": { "type": "string" },
+				"object_name": { "type": "string" },
+				"file_name": { "type": "string" }
+			},
+			"required": [ "bucket", "object_name" ]
+		},
+		"pull_http": {
+			"type": "object",
+			"properties": {
+				"from": { "const": "url" },
+				"url": { "type": "string" },
+				"headers": { "$ref": "#/definitions/headers"},
+				"filename": { "type": "string" },
+				"extract": { "type": "boolean" }
+			},
+			"required": [ "from", "url" ]
+		},
+		"pull_s3": {
+			"allOf": [
+				{
+					"type": "object",
+					"properties": {
+						"from": { "const": "s3" }
+					},
+					"required": [ "from" ]
+				},
+				{ "$ref": "#/definitions/s3" }
+			]
+		},
+		"pull": {
+			"oneOf": [
+				{ "$ref": "#/definitions/pull_http" },
+				{ "$ref": "#/definitions/pull_s3" }
+			]
+		},
+		"push_http": {
+			"type": "object",
+			"properties": {
+				"to": { "const": "url" },
+				"filename": { "type": "string" },
+				"url": { "type": "string" },
+				"method": {"type": "string" },
+				"headers": { "$ref": "#/definitions/headers" }
+			},
+			"required": [ "to", "filename", "url" ]
+		},
+		"push_s3": {
+			"allOf": [
+				{
+					"type": "object",
+					"properties": {
+						"to": { "const": "s3" }
+					},
+					"required": [ "to" ]
+				},
+				{ "$ref": "#/definitions/s3" }
+			]
+		},
+		"push": {
+			"oneOf": [
+				{ "$ref": "#/definitions/push_http" },
+				{ "$ref": "#/definitions/push_s3" }
+			]
+		},
+		"run": {
+			"type": "object",
+			"properties": {
+				"command": {
+					"type": "array",
+					"items": { "type": "string" }
+				},
+				"directory": { "type": "string" }
+			},
+			"required": [ "command" ]
+		}
+	},
+	"type": "object",
+	"properties": {
+		"pull": {
+			"oneOf": [
+				{
+					"type": "array",
+					"items": { "$ref" :"#/definitions/pull" }
+				},
+				{ "$ref" :"#/definitions/pull" }
+			]
+		},
+		"push": {
+			"oneOf": [
+				{
+					"type": "array",
+					"items": { "$ref" :"#/definitions/push" }
+				},
+				{ "$ref" :"#/definitions/push" }
+			]
+		},
+		"run": {
+			"oneOf": [
+				{
+					"type": "array",
+					"items": { "$ref" :"#/definitions/run" }
+				},
+				{ "$ref" :"#/definitions/run" }
+			]
+		}
+	}
+}

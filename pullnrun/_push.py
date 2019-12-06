@@ -3,7 +3,7 @@ from shutil import make_archive
 
 from ._utils import timestamp, create_meta
 
-def push(filename, url, method='PUT', headers=None):
+def _push_http(filename, url, method='PUT', headers=None):
     ok = True
     status = None
 
@@ -26,3 +26,11 @@ def push(filename, url, method='PUT', headers=None):
         },
         'meta': create_meta(start, end)
     }
+
+def push(**kwargs):
+    to = kwargs.get('to')
+    if to == 'url':
+        keys = ('filename', 'url', 'method', 'headers', )
+        return _pull_http(**{k: v for k, v in kwargs.items() if k in keys})
+    elif to == 's3':
+        raise NotImplementedError('TODO')

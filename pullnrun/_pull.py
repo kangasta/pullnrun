@@ -8,7 +8,7 @@ def _write_to_file(response, filename):
         for chunk in response.iter_content(chunk_size=1<<20): # 1 MB
             if chunk: f.write(chunk)
 
-def pull(url, headers=None, filename=None, extract=True):
+def _pull_http(url, headers=None, filename=None, extract=True):
     if not filename:
         filename = url.split('/')[-1]
 
@@ -39,3 +39,11 @@ def pull(url, headers=None, filename=None, extract=True):
         },
         'meta': create_meta(start, end)
     }
+
+def pull(**kwargs):
+    from_ = kwargs.get('from')
+    if from_ == 'url':
+        keys = ('url', 'headers', 'filename', 'extract')
+        return _pull_http(**{k: v for k, v in kwargs.items() if k in keys})
+    elif from_ == 's3':
+        raise NotImplementedError('TODO')
