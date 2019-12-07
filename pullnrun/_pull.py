@@ -8,11 +8,11 @@ def _write_to_file(response, filename):
         for chunk in response.iter_content(chunk_size=1<<20): # 1 MB
             if chunk: f.write(chunk)
 
-def _pull_http(url, headers=None, filename=None, extract=True):
+def _pull_http(url, headers=None, filename=None, extract=False):
     if not filename:
         filename = url.split('/')[-1]
 
-    ok = True
+    ok = None
     status = None
 
     start = timestamp()
@@ -20,6 +20,7 @@ def _pull_http(url, headers=None, filename=None, extract=True):
         with get(url, headers=headers, stream=True) as r:
             r.raise_for_status()
             status = r.status_code
+            ok = r.ok
             _write_to_file(r, filename)
 
         if extract:

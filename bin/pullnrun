@@ -21,7 +21,7 @@ def run():
 		env_input = json.loads(os.getenv('PULL_N_RUN'))
 		main(env_input)
 	if args.file:
-		with open(args.file, r) as f:
+		with open(args.file, 'r') as f:
 			file_input = json.load(f)
 		main(file_input)
 
