@@ -9,7 +9,7 @@ install:
 - pip install -r requirements.txt
 script:
 - pylint -E */
-- coverage run --source ./ --omit setup.py -m unittest discover tst/
+- coverage run --source ./ --omit setup.py,tst/* -m unittest discover tst/
 - coverage report -m
 deploy:
   provider: pypi

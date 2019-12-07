@@ -17,7 +17,7 @@ For unittests and linting, run:
 python3 -m unittest discover tst/
 
 # Unittests with coverage
-coverage run --source ./ --omit setup.py -m unittest discover tst/
+coverage run --source ./ --omit setup.py,tst/* -m unittest discover tst/
 coverage report -m
 
 # Linting error check
