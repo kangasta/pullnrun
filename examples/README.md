@@ -14,5 +14,5 @@ See example [Dockerfile](./Dockerfile) and [timetbl.json](./timetbl.json) and bu
 
 ```bash
 docker build . -t pullnrun
-docker run -e "PULLNRUN=$(cat timetbl.json)"
+docker run -e "PULLNRUN=$(cat timetbl.json)" pullnrun
 ```
