@@ -1,0 +1,1 @@
+{"$schema":"../pullnrun/schema.json","pull":{"from":"url","url":"https://raw.githubusercontent.com/kangasta/timetbl/master/tst/check_online_status.robot"},"run":{"command":["robot","."]}}
