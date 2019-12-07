@@ -7,7 +7,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
 	name="pullnrun",
-	version="0.0.0",
+	version="0.0.1",
 	author="Toni Kangas",
 	description="A simple python app for running a set of commands from remote sources and pushing result files to remote targets.",
 	long_description=long_description,
