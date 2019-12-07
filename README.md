@@ -2,6 +2,14 @@
 
 A simple python app for running a set of commands from remote sources and pushing result files to remote targets.
 
+## Installing
+
+Ensure that you are using Python >= 3.6 with `python --version`. To install, run:
+
+```bash
+pip install pullnrun
+```
+
 ## Usage
 
 ### Examples
