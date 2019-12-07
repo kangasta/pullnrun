@@ -1,0 +1,21 @@
+language: python
+python:
+- '3.5'
+- '3.6'
+- '3.7'
+- '3.8'
+- 3.8-dev
+install:
+- pip install -r requirements.txt
+script:
+- pylint -E */
+- coverage run --source ./ --omit setup.py -m unittest discover tst/
+- coverage report -m
+deploy:
+  provider: pypi
+  user: kangasta
+  password:
+    secure: AYtFiggyOquEbtuui8aXTXgIXoxpBpek2J9+FH09l1rUDdNZYx0S42dGW/2OfbzL8qA0du/65Nb5iPvP+W+nXfJ6Q2zSloxUZppj6yNl/6kcylHHONZZR3FrcVk3OIqOMH1dw1H6qy27kKFbPh0bHP3zTrANy+VrheLr7dIycuIMZJ+hP92pj22Ume6L9C6N9oO/NiLhe0XQQq2ppbJBeCNxEKW/E4SwUHqtnAEBl4uui48zx+lUiW1GJG8ZDRdHX0qbIVDNaYTvhEXM4ijIjTyW3V6ihmJy+OlTrxLZLEyy8GZiZo1Clt/WbZ8AlndzO1k31KdAM/AfGGhzbM4xNA3fbendJ+2Zycxvez28wESQ4BG0TZ3JF7vtroQ6PhmnF43hN7aqNtfCT9duQQKQ0FheuUgvvRvEzOKCbjCvi1KL2OWLshnZCLfVyOtsGoz55qEPBZCh8Hus5/Kl/otoiyvhHmGBGwDG/adaeLNmfJunfCdcImrwnS0oNxb8maEnsCJZ6CXd880ZOVtF6V0uKdk2l5BI02F1iCMHWKyaqEVO5HSMIg9e97u4XeA7ge24oq3lyd7dGCGA+rZmUXYPsbqWn0YvelQzZtIE8npwHqlptuYO+UNUpurUuirYirNEMOGiRg3FEk4pFAzfn03Q82yIpLdKN9pnV/k7YSpGeq0=
+  on:
+    tags: true
+    python: 3.7
