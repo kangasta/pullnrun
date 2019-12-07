@@ -1,8 +1,14 @@
 __pycache__/
 *.pyc
 
+# Test coverage
 .coverage
 
+# Build results
 build/
 dist/
 *.egg-info/
+
+# Files pulled by examples
+**/fizzbuzz.py
+**/check_online_status.robot
