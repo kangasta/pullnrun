@@ -6,7 +6,7 @@ with open("README.md", "r") as f:
 	long_description = f.read()
 
 setuptools.setup(
-	name="pull-n-run",
+	name="pullnrun",
 	version="0.0.0",
 	author="Toni Kangas",
 	description="A simple python app for running a set of commands from remote sources and pushing result files to remote targets.",
@@ -17,8 +17,9 @@ setuptools.setup(
 	package_data={
 		'pullnrun': ['schema.json']
 	},
-	scripts=["bin/pull-n-run"],
+	scripts=["bin/pullnrun"],
 	install_requires=[
+		"importlib_resources; python_version<'3.7'",
 		"jsonschema",
 		"requests"
 	],

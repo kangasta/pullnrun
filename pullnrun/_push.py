@@ -31,6 +31,6 @@ def push(**kwargs):
     to = kwargs.get('to')
     if to == 'url':
         keys = ('filename', 'url', 'method', 'headers', )
-        return _pull_http(**{k: v for k, v in kwargs.items() if k in keys})
+        return _push_http(**{k: v for k, v in kwargs.items() if k in keys})
     elif to == 's3':
         raise NotImplementedError('TODO')

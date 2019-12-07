@@ -1,4 +1,4 @@
-# pull-n-run
+# pullnrun
 
 A simple python app for running a set of commands from remote sources and pushing result files to remote targets.
 
