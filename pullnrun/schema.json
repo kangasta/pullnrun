@@ -51,6 +51,7 @@
 				"filename": { "type": "string" },
 				"url": { "type": "string" },
 				"method": {"type": "string" },
+				"data": { "$ref": "#/definitions/headers" },
 				"headers": { "$ref": "#/definitions/headers" }
 			},
 			"required": [ "to", "filename", "url" ]
