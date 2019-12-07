@@ -9,7 +9,7 @@ from pullnrun import main
 def run():
 	parser = ArgumentParser()
 	parser.add_argument("input_json", type=str, nargs='?', help='Input JSON')
-	parser.add_argument('--env', '-e', action='store_true', help='Get input JSON from PULL_N_RUN environment variable')
+	parser.add_argument('--env', '-e', action='store_true', help='Get input JSON from PULLNRUN environment variable')
 	parser.add_argument('--file', '-f', type=str, help='Load input JSON from file')
 
 	args = parser.parse_args()
@@ -18,7 +18,7 @@ def run():
 		inline_input = json.loads(args.input_json)
 		main(inline_input)
 	if args.env:
-		env_input = json.loads(os.getenv('PULL_N_RUN'))
+		env_input = json.loads(os.getenv('PULLNRUN'))
 		main(env_input)
 	if args.file:
 		with open(args.file, 'r') as f:
