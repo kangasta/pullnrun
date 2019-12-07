@@ -21,7 +21,7 @@ class LogTest(TestCase):
             output = print_mock.call_args.args[0]
 
             for result in results:
-                self.assertTrue(result in output)
+                self.assertIn(result, output)
 
     @patch('builtins.print')
     def test_log_to_console_prints_run_output(self, print_mock):
@@ -31,4 +31,4 @@ class LogTest(TestCase):
         log_to_console(data)
         output = print_mock.call_args.args[0]
 
-        self.assertTrue(result in output)
+        self.assertIn(result, output)
