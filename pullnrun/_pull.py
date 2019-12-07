@@ -35,6 +35,7 @@ def _pull_http(url, headers=None, filename=None, extract=False):
         'ok': ok,
         'data': {
             'url': url,
+            'file': filename,
             'status': status,
             'extracted': extract,
         },

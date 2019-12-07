@@ -9,6 +9,7 @@ except ImportError:
 from jsonschema import validate
 
 from ._utils import as_list
+from ._log import log_to_console
 
 from ._pull import pull
 from ._push import push
@@ -20,15 +21,11 @@ FUNCTION_MAPPINGS = {
     'push': push,
 }
 
-def _log(output_dict):
-    output_str = json.dumps(output_dict)
-    print(output_str)
-
 def _validate(input_dict):
     schema = json.loads(resources.read_text('pullnrun', 'schema.json'))
     validate(instance=input_dict, schema=schema)
 
-def main(input_dict, log=_log):
+def main(input_dict, log=log_to_console):
     _validate(input_dict)
     ret = []
 
