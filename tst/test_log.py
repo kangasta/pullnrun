@@ -18,7 +18,7 @@ class LogTest(TestCase):
 
         for data, results in testdata:
             log_to_console(data)
-            output = print_mock.call_args.args[0]
+            output = print_mock.call_args[-2][0]
 
             for result in results:
                 self.assertIn(result, output)
@@ -29,6 +29,6 @@ class LogTest(TestCase):
         result = 'banana'
 
         log_to_console(data)
-        output = print_mock.call_args.args[0]
+        output = print_mock.call_args[-2][0]
 
         self.assertIn(result, output)
