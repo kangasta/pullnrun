@@ -1,7 +1,13 @@
 from requests import get
 from shutil import unpack_archive
 
-from ._utils import timestamp, create_meta
+try:
+    import boto3
+    S3 = boto3.client('s3')
+except ImportError:
+    pass
+
+from ._utils import timestamp, create_meta, filter_dict
 
 def _write_to_file(response, filename):
     with open(filename, 'wb') as f:
@@ -31,7 +37,7 @@ def _pull_http(url, headers=None, filename=None, extract=False):
     end = timestamp()
 
     return {
-        'type': 'pull',
+        'type': 'pull_http',
         'ok': ok,
         'data': {
             'url': url,
@@ -42,10 +48,37 @@ def _pull_http(url, headers=None, filename=None, extract=False):
         'meta': create_meta(start, end)
     }
 
+def _pull_s3(bucket, object_name, filename=None):
+    if not filename:
+        filename = object_name
+
+    ok = None
+
+    start = timestamp()
+    try:
+        S3.download_file(bucket, object_name, filename)
+        ok=True
+    except:
+        ok=False
+    end = timestamp()
+
+    return {
+        'type': 'pull_s3',
+        'ok': ok,
+        'data': {
+            'bucket': bucket,
+            'object_name': object_name,
+            'filename': filename,
+        },
+        'meta': create_meta(start, end)
+    }
+
 def pull(**kwargs):
     from_ = kwargs.get('from')
+
     if from_ == 'url':
         keys = ('url', 'headers', 'filename', 'extract')
-        return _pull_http(**{k: v for k, v in kwargs.items() if k in keys})
+        return _pull_http(**filter_dict(kwargs, keys))
     elif from_ == 's3':
-        raise NotImplementedError('TODO')
+        keys = ('bucket', 'object_name', 'filename')
+        return _pull_s3(**filter_dict(kwargs, keys))

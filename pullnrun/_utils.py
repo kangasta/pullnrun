@@ -22,3 +22,6 @@ def create_meta(start, end, **kwargs):
         'end': end,
         **kwargs
     }
+
+def filter_dict(dict_, keys):
+    return {k: v for k, v in dict_.items() if k in keys}
