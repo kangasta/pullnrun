@@ -1,5 +1,7 @@
 # pullnrun
 
+[![Build Status](https://travis-ci.org/kangasta/pullnrun.svg?branch=master)](https://travis-ci.org/kangasta/pullnrun)
+
 A simple python app for running a set of commands from remote sources and pushing result files to remote targets.
 
 ## Installing
