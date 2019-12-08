@@ -12,7 +12,7 @@ class LogTest(TestCase):
     @patch('builtins.print')
     def test_log_to_console_prints_type_and_status(self, print_mock):
         testdata = [
-            ({'type': 'pull', 'ok': True, 'data': {'status': 200}}, ['\u2714', '200', 'PULL']),
+            ({'type': 'pull_http', 'ok': True, 'data': {'status': 200}}, ['\u2714', '200', 'PULL']),
             ({'type': 'run', 'ok': False, 'data': {'exit_code': 200}}, ['\u2718', '200', 'RUN']),
         ]
 
@@ -39,8 +39,8 @@ class LogTest(TestCase):
         f = 'filename'
 
         testdata = [
-            ({'type': 'pull', 'data': {'file': f, 'url': url}}, [f, 'from', url]),
-            ({'type': 'push', 'data': {'file': f, 'url': url}}, [f, 'to', url]),
+            ({'type': 'pull_http', 'data': {'file': f, 'url': url}}, [f, 'from', url]),
+            ({'type': 'push_http', 'data': {'file': f, 'url': url}}, [f, 'to', url]),
         ]
 
         for data, results in testdata:

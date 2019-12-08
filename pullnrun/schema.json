@@ -11,9 +11,8 @@
 			"properties": {
 				"bucket": { "type": "string" },
 				"object_name": { "type": "string" },
-				"file_name": { "type": "string" }
-			},
-			"required": [ "bucket", "object_name" ]
+				"filename": { "type": "string" }
+			}
 		},
 		"pull_http": {
 			"type": "object",
@@ -33,7 +32,7 @@
 					"properties": {
 						"from": { "const": "s3" }
 					},
-					"required": [ "from" ]
+					"required": [ "from", "bucket", "object_name" ]
 				},
 				{ "$ref": "#/definitions/s3" }
 			]
@@ -63,7 +62,7 @@
 					"properties": {
 						"to": { "const": "s3" }
 					},
-					"required": [ "to" ]
+					"required": [ "to", "bucket", "filename" ]
 				},
 				{ "$ref": "#/definitions/s3" }
 			]

@@ -7,11 +7,11 @@ def log_to_console(output_dict):
     detail = ''
     output = None
 
-    if type_ in ('pull', 'push'):
+    if type_ in ('pull_http', 'push_http'):
         status = str(output_dict.get('data', {}).get('status', '')).rjust(4)
         file_ = output_dict.get('data', {}).get('file', '')
         url = output_dict.get('data', {}).get('url', '')
-        direction = 'to' if type_ == 'push' else 'from'
+        direction = 'to' if 'push' in type_ else 'from'
         detail = f'{file_} {direction} {url}'
     elif type_ == 'run':
         status = str(output_dict.get('data', {}).get('exit_code', '')).rjust(4)
