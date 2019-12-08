@@ -3,7 +3,6 @@ from shutil import unpack_archive
 
 try:
     import boto3
-    S3 = boto3.client('s3')
 except ImportError:
     pass
 
@@ -54,9 +53,14 @@ def _pull_s3(bucket, object_name, filename=None):
 
     ok = None
 
+    try:
+        s3 = boto3.client('s3')
+    except NameError:
+        pass
+
     start = timestamp()
     try:
-        S3.download_file(bucket, object_name, filename)
+        s3.download_file(bucket, object_name, filename)
         ok=True
     except:
         ok=False

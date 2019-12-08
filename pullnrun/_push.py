@@ -3,7 +3,6 @@ from shutil import make_archive
 
 try:
     import boto3
-    S3 = boto3.client('s3')
 except ImportError:
     pass
 
@@ -41,9 +40,14 @@ def _push_s3(bucket, filename, object_name=None):
 
     ok = None
 
+    try:
+        s3 = boto3.client('s3')
+    except NameError:
+        pass
+
     start = timestamp()
     try:
-        S3.upload_file(filename, bucket, object_name)
+        s3.upload_file(filename, bucket, object_name)
         ok=True
     except:
         ok=False
