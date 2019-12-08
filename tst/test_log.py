@@ -32,3 +32,20 @@ class LogTest(TestCase):
         output = print_mock.call_args[-2][0]
 
         self.assertIn(result, output)
+
+    @patch('builtins.print')
+    def test_log_to_console_prints_pull_and_push_url(self, print_mock):
+        url = 'example.com'
+        f = 'filename'
+
+        testdata = [
+            ({'type': 'pull', 'data': {'file': f, 'url': url}}, [f, 'from', url]),
+            ({'type': 'push', 'data': {'file': f, 'url': url}}, [f, 'to', url]),
+        ]
+
+        for data, results in testdata:
+            log_to_console(data)
+            output = print_mock.call_args[-2][0]
+
+            for result in results:
+                self.assertIn(result, output)

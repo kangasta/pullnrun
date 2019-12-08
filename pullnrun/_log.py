@@ -10,7 +10,7 @@ def log_to_console(output_dict):
     if type_ in ('pull', 'push'):
         status = str(output_dict.get('data', {}).get('status', '')).rjust(4)
         file_ = output_dict.get('data', {}).get('file', '')
-        url = output_dict.get('data', {}).get('file', '')
+        url = output_dict.get('data', {}).get('url', '')
         direction = 'to' if type_ == 'push' else 'from'
         detail = f'{file_} {direction} {url}'
     elif type_ == 'run':
