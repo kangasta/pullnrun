@@ -1,9 +1,6 @@
 import json
 from time import time
 
-def timestamp():
-    return int(time() * 1000)
-
 def as_list(a):
     if isinstance(a, list):
         return a
@@ -25,3 +22,17 @@ def create_meta(start, end, **kwargs):
 
 def filter_dict(dict_, keys):
     return {k: v for k, v in dict_.items() if k in keys}
+
+def get_log_entry(type_, status, start=None, end=None, **data):
+    return {
+        'type': type_,
+        'status': status,
+        'data': data,
+        'meta': create_meta(start, end)
+    }
+
+def timestamp():
+    return int(time() * 1000)
+
+def void_fn(*args, **kwargs):
+    return None

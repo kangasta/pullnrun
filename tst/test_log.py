@@ -38,8 +38,9 @@ class LogTest(TestCase):
                 'url': url,
             }}, [f, 'to', url], []),
             # HTTP details
-            ({'type': 'pull_http', 'ok': True, 'data': {'status': 200}}, ['\u2714', '200', 'PULL'], ['_HTTP']),
-            ({'type': 'run', 'ok': False, 'data': {'exit_code': 200}}, ['\u2718', '200', 'RUN'], ['_HTTP']),
+            ({'type': 'pull_http', 'status': 'SUCCESS', 'data': {'status_code': 200}}, ['\u2714', '200', 'PULL'], ['_HTTP']),
+            ({'type': 'pull_http', 'status': 'STARTED', 'data': {}}, ['\u25B6', 'PULL'], ['_HTTP']),
+            ({'type': 'run', 'status': 'FAIL', 'data': {'exit_code': 200}}, ['\u2718', '200', 'RUN'], ['_HTTP']),
             # S3 details
             ({'type': 'pull_s3', 'data': {
                 'bucket': 'b',
