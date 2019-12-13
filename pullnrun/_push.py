@@ -1,12 +1,11 @@
 from requests import request
-from shutil import make_archive
 
 try:
     import boto3
 except ImportError:
     pass
 
-from ._utils import timestamp, create_meta, filter_dict, get_log_entry, void_fn
+from ._utils import timestamp, filter_dict, get_log_entry, void_fn
 
 def _push_http(filename, url, method='PUT', data=None, headers=None, log=void_fn):
     status = 'STARTED'
@@ -59,6 +58,6 @@ def push(log, **kwargs):
     if to == 'url':
         keys = ('filename', 'url', 'method', 'data', 'headers', )
         return _push_http(**filter_dict(kwargs, keys), log=log)
-    elif to == 's3':
+    if to == 's3':
         keys = ('bucket', 'object_name', 'filename')
         return _push_s3(**filter_dict(kwargs, keys), log=log)

@@ -1,12 +1,12 @@
-from requests import get
 from shutil import unpack_archive
+from requests import get
 
 try:
     import boto3
 except ImportError:
     pass
 
-from ._utils import timestamp, create_meta, get_log_entry, filter_dict, void_fn
+from ._utils import timestamp, get_log_entry, filter_dict, void_fn
 
 def _write_to_file(response, filename):
     with open(filename, 'wb') as f:
@@ -71,6 +71,6 @@ def pull(log, **kwargs):
     if from_ == 'url':
         keys = ('url', 'headers', 'filename', 'extract')
         return _pull_http(**filter_dict(kwargs, keys), log=log)
-    elif from_ == 's3':
+    if from_ == 's3':
         keys = ('bucket', 'object_name', 'filename')
         return _pull_s3(**filter_dict(kwargs, keys), log=log)

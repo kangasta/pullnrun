@@ -13,7 +13,7 @@ class RunTest(TestCase):
         log = LogMock()
         self.assertTrue(run(log, ['cmd']))
 
-        mock_run.assert_called_with(['cmd'], cwd=None, stdout=ANY, stderr=ANY, text=True)
+        mock_run.assert_called_with(['cmd'], cwd=None, check=False, stdout=ANY, stderr=ANY, text=True)
         self.assertEqual(log.last['status'], 'SUCCESS')
 
         data = log.last['data']

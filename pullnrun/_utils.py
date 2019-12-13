@@ -34,5 +34,5 @@ def get_log_entry(type_, status, start=None, end=None, **data):
 def timestamp():
     return int(time() * 1000)
 
-def void_fn(*args, **kwargs):
+def void_fn(*_args, **_kwargs):
     return None

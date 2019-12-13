@@ -1,6 +1,6 @@
 import subprocess
 
-from ._utils import timestamp, create_meta, get_log_entry
+from ._utils import timestamp, get_log_entry
 
 def run(log, command, directory=None):
     kwargs = {
@@ -17,7 +17,7 @@ def run(log, command, directory=None):
     log(get_log_entry('run', status, command=command, start=start))
 
     try:
-        cp = subprocess.run(command, cwd=directory, **kwargs)
+        cp = subprocess.run(command, cwd=directory, check=False, **kwargs)
         returncode = cp.returncode
         status = 'SUCCESS' if returncode == 0 else 'FAIL'
         stdout = str(cp.stdout)
