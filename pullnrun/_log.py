@@ -29,6 +29,20 @@ def _s3_details(output_dict):
 
     return detail
 
+def _duration(output_dict):
+    start = output_dict.get('meta', {}).get('start')
+    end = output_dict.get('meta', {}).get('end')
+
+    if not start or not end:
+        return ''
+
+    duration = end - start
+
+    if duration >= 1000:
+        return f'({duration/1000:.3f} s)'
+    else:
+        return f'({duration} ms)'
+
 def log_to_console(output_dict):
     ok = '\u2714' if output_dict.get('ok') else '\u2718'
     type_ = output_dict.get('type', '')
@@ -47,10 +61,9 @@ def log_to_console(output_dict):
         detail = ' '.join(output_dict.get('data', {}).get('command', []))
         output = output_dict.get('data', {}).get('output')
 
-    start = output_dict.get('meta', {}).get('start', 0)
-    end = output_dict.get('meta', {}).get('end', 0)
+    duration = _duration(output_dict)
 
-    print(f'{ok} {status} {stage} {detail} ({end - start} ms)')
+    print(f'{ok} {status} {stage} {detail} {duration}')
 
     if output:
         end = '\n' if output[-1] != '\n' else ''
