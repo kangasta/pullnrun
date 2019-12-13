@@ -1,7 +1,7 @@
 from unittest import TestCase
 from time import time
 
-from pullnrun._utils import timestamp, as_list, create_meta, filter_dict
+from pullnrun._utils import timestamp, as_list, create_meta, filter_dict, void_fn
 
 class UtilsTest(TestCase):
     def test_as_list_ensures_variable_is_list(self):
@@ -43,3 +43,9 @@ class UtilsTest(TestCase):
 
         c = filter_dict(a, [])
         self.assertEqual(len(c), 0)
+
+    def test_void_fn_returns_none(self):
+        self.assertIsNone(void_fn())
+        self.assertIsNone(void_fn(1, 2, 3))
+        self.assertIsNone(void_fn(asd=123))
+        self.assertIsNone(void_fn(1, 2, 3, asd=123))

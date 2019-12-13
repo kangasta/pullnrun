@@ -27,12 +27,14 @@ def _validate(input_dict):
 
 def main(input_dict, log=log_to_console):
     _validate(input_dict)
-    ret = []
+    success, error = (0, 0, )
 
     for stage, function in FUNCTION_MAPPINGS.items():
         for action in as_list(input_dict.get(stage)):
-            output = function(**action)
-            ret.append(output)
-            log(output)
+            ok = function(log=log, **action)
+            if ok:
+                success += 1
+            else:
+                error += 1
 
-    return ret
+    return (success, error, )

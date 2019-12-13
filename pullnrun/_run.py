@@ -1,36 +1,29 @@
 import subprocess
 
-from ._utils import timestamp, create_meta
+from ._utils import timestamp, create_meta, get_log_entry
 
-def run(command, directory=None):
+def run(log, command, directory=None):
     kwargs = {
         'stdout': subprocess.PIPE,
         'stderr': subprocess.STDOUT,
         'text': True,
     }
 
-    ok = True
-    args = None
+    status = 'STARTED'
     returncode = None
     stdout = None
 
     start = timestamp()
+    log(get_log_entry('run', status, command=command, start=start))
+
     try:
         cp = subprocess.run(command, cwd=directory, **kwargs)
-        args = cp.args
         returncode = cp.returncode
+        status = 'SUCCESS' if returncode == 0 else 'FAIL'
         stdout = str(cp.stdout)
     except:
-        ok = False
+        status = 'ERROR'
     end = timestamp()
 
-    return {
-        'type': 'run',
-        'ok': ok and (returncode == 0),
-        'data': {
-            'command': args,
-            'exit_code': returncode,
-            'output': stdout,
-        },
-        'meta': create_meta(start, end)
-    }
+    log(get_log_entry('run', status, command=command, exit_code=returncode, output=stdout, start=start, end=end))
+    return status == 'SUCCESS'

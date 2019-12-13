@@ -1,6 +1,16 @@
+def _status(output_dict):
+    status = output_dict.get('status')
+    if status == 'SUCCESS':
+        return '\u2714'
+    elif status in ('FAIL', 'ERROR', ):
+        return '\u2718'
+    elif status == 'STARTED':
+        return '\u25B6'
+    return ' '
+
 def _http_details(output_dict):
     type_ = output_dict.get('type', '')
-    status = str(output_dict.get('data', {}).get('status', '')).rjust(4)
+    status_code = str(output_dict.get('data', {}).get('status_code', '')).rjust(4)
 
     file_ = output_dict.get('data', {}).get('file', '')
     direction = 'to' if 'push' in type_ else 'from'
@@ -8,7 +18,7 @@ def _http_details(output_dict):
 
     detail = f'{file_} {direction} {url}'
 
-    return (status, detail, )
+    return (status_code, detail, )
 
 def _s3_details(output_dict):
     type_ = output_dict.get('type', '')
@@ -44,26 +54,26 @@ def _duration(output_dict):
         return f'({duration} ms)'
 
 def log_to_console(output_dict):
-    ok = '\u2714' if output_dict.get('ok') else '\u2718'
+    status = _status(output_dict)
     type_ = output_dict.get('type', '')
     stage = type_.upper()[:4].ljust(4)
 
-    status = ''.rjust(4)
+    status_code = ''.rjust(4)
     detail = ''
     output = None
 
     if type_ in ('pull_http', 'push_http'):
-        status, detail = _http_details(output_dict)
+        status_code, detail = _http_details(output_dict)
     elif type_ in ('pull_s3', 'push_s3'):
         detail = _s3_details(output_dict)
     elif type_ == 'run':
-        status = str(output_dict.get('data', {}).get('exit_code', '')).rjust(4)
+        status_code = str(output_dict.get('data', {}).get('exit_code', '')).rjust(4)
         detail = ' '.join(output_dict.get('data', {}).get('command', []))
         output = output_dict.get('data', {}).get('output')
 
     duration = _duration(output_dict)
 
-    print(f'{ok} {status} {stage} {detail} {duration}')
+    print(f'{status} {status_code} {stage} {detail} {duration}')
 
     if output:
         end = '\n' if output[-1] != '\n' else ''
