@@ -2,9 +2,9 @@ def _status(output_dict):
     status = output_dict.get('status')
     if status == 'SUCCESS':
         return '\u2714'
-    elif status in ('FAIL', 'ERROR', ):
+    if status in ('FAIL', 'ERROR', ):
         return '\u2718'
-    elif status == 'STARTED':
+    if status == 'STARTED':
         return '\u25B6'
     return ' '
 
@@ -50,8 +50,7 @@ def _duration(output_dict):
 
     if duration >= 1000:
         return f'({duration/1000:.3f} s)'
-    else:
-        return f'({duration} ms)'
+    return f'({duration} ms)'
 
 def log_to_console(output_dict):
     status = _status(output_dict)

@@ -1,5 +1,4 @@
 import json
-import os
 
 try:
     import importlib.resources as resources
