@@ -8,7 +8,7 @@ except ImportError:
 from jsonschema import validate
 
 from ._utils import as_list
-from ._log import log_to_console
+from ._log import Log
 
 from ._pull import pull
 from ._push import push
@@ -24,8 +24,12 @@ def _validate(input_dict):
     schema = json.loads(resources.read_text('pullnrun', 'schema.json'))
     validate(instance=input_dict, schema=schema)
 
-def main(input_dict, log=log_to_console):
+def main(input_dict, quiet=False):
     _validate(input_dict)
+
+    log = Log(quiet)
+    log.start()
+
     success, error = (0, 0, )
 
     for stage, function in FUNCTION_MAPPINGS.items():
@@ -36,4 +40,5 @@ def main(input_dict, log=log_to_console):
             else:
                 error += 1
 
+    log.end(success, error)
     return (success, error, )
