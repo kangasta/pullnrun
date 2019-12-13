@@ -1,9 +1,22 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from pullnrun._log import log_to_console
+from pullnrun._log import log_to_console, _duration
 
 class LogTest(TestCase):
+    def test_duration_is_logged_correctly(self):
+        testdata = [
+            ({'meta': {'start': 0, 'end': 1, }}, ''),
+            ({'meta': {'start': 1, }}, ''),
+            ({'meta': {'start': 0, }}, ''),
+            ({'meta': {'start': 3, 'end': 53, }}, '(50 ms)'),
+            ({'meta': {'start': 3, 'end': 5003, }}, '(5.000 s)'),
+        ]
+
+        for data, output in testdata:
+            duration = _duration(data)
+            self.assertEqual(duration, output)
+
     @patch('builtins.print')
     def test_log_to_console_does_not_crash_on_empty_input(self, print_mock):
         log_to_console({})
