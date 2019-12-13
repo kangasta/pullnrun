@@ -1,3 +1,8 @@
+from os import getenv
+from uuid import uuid4
+
+from pullnrun._utils import get_log_entry, timestamp
+
 def _status(output_dict):
     status = output_dict.get('status')
     if status == 'SUCCESS':
@@ -7,6 +12,31 @@ def _status(output_dict):
     if status == 'STARTED':
         return '\u25B6'
     return ' '
+
+def _duration(output_dict):
+    start = output_dict.get('meta', {}).get('start')
+    end = output_dict.get('meta', {}).get('end')
+
+    if not start or not end:
+        return ''
+
+    duration = end - start
+
+    if duration >= 1000:
+        return f'{duration/1000:.3f} s'
+    return f'{duration} ms'
+
+def _main_text(output_dict):
+    if output_dict.get('status') == 'STARTED':
+        id_ = output_dict.get('data', {}).get('id')
+        return f'Started pullnrun execution with id {id_}'
+
+    if output_dict.get('status') in ('SUCCESS', 'ERROR'):
+        success = output_dict.get('data', {}).get('success')
+        fail = output_dict.get('data', {}).get('fail')
+        duration = _duration(output_dict)
+
+        return f'Finished pullnrun execution in {duration}: {success} out of {success + fail} actions succeeded.'
 
 def _http_details(output_dict):
     type_ = output_dict.get('type', '')
@@ -39,22 +69,13 @@ def _s3_details(output_dict):
 
     return detail
 
-def _duration(output_dict):
-    start = output_dict.get('meta', {}).get('start')
-    end = output_dict.get('meta', {}).get('end')
-
-    if not start or not end:
-        return ''
-
-    duration = end - start
-
-    if duration >= 1000:
-        return f'({duration/1000:.3f} s)'
-    return f'({duration} ms)'
-
 def log_to_console(output_dict):
-    status = _status(output_dict)
     type_ = output_dict.get('type', '')
+    if type_ == 'main':
+        print(_main_text(output_dict))
+        return
+
+    status = _status(output_dict)
     stage = type_.upper()[:4].ljust(4)
 
     status_code = ''.rjust(4)
@@ -71,9 +92,32 @@ def log_to_console(output_dict):
         output = output_dict.get('data', {}).get('output')
 
     duration = _duration(output_dict)
+    duration = f'({duration})' if duration else ''
 
     print(f'{status} {status_code} {stage} {detail} {duration}')
 
     if output:
         end = '\n' if output[-1] != '\n' else ''
         print(f'\n{output}{end}')
+
+class Log:
+    def __init__(self, quiet=False):
+        self._start = None
+        self._end = None
+        self._id = getenv('PULLNRUN_ID', str(uuid4()))
+        self._to_console = not quiet
+
+    def __call__(self, log_entry):
+        if self._to_console:
+            log_to_console(log_entry)
+
+    def start(self):
+        self._start = timestamp()
+        if self._to_console:
+            log_to_console(get_log_entry('main', 'STARTED', start=self._start, id=self._id))
+
+    def end(self, success, fail):
+        self._end = timestamp()
+        status = 'SUCCESS' if success > 0 and fail == 0 else 'ERROR'
+        if self._to_console:
+            log_to_console(get_log_entry('main', status, start=self._start, end=self._end, success=success, fail=fail))
