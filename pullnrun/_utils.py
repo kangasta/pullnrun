@@ -31,6 +31,11 @@ def get_log_entry(type_, status, start=None, end=None, **data):
         'meta': create_meta(start, end)
     }
 
+def prefix_object(prefix, object_name, delimiter='/'):
+    name_as_list = object_name.split(delimiter)
+    folder = delimiter.join(name_as_list[:-1])
+    return f'{folder}{folder and delimiter}{prefix}-{name_as_list[-1]}'
+
 def timestamp():
     return int(time() * 1000)
 

@@ -5,7 +5,7 @@ try:
 except ImportError:
     pass
 
-from ._utils import timestamp, filter_dict, get_log_entry, void_fn
+from ._utils import timestamp, filter_dict, get_log_entry, void_fn, prefix_object
 
 def _push_http(filename, url, method='PUT', data=None, headers=None, log=void_fn):
     status = 'STARTED'
@@ -28,9 +28,11 @@ def _push_http(filename, url, method='PUT', data=None, headers=None, log=void_fn
     log(get_log_entry('push_http', status, start=start, end=end, url=url, filename=filename, status_code=status_code))
     return status == 'SUCCESS'
 
-def _push_s3(bucket, filename, object_name=None, log=void_fn):
+def _push_s3(bucket, filename, object_name=None, prefix=None, log=void_fn):
     if not object_name:
         object_name = filename
+    if prefix:
+        object_name = prefix_object(prefix, object_name)
 
     status = 'STARTED'
 
@@ -59,5 +61,6 @@ def push(log, **kwargs):
         keys = ('filename', 'url', 'method', 'data', 'headers', )
         return _push_http(**filter_dict(kwargs, keys), log=log)
     if to == 's3':
-        keys = ('bucket', 'object_name', 'filename')
-        return _push_s3(**filter_dict(kwargs, keys), log=log)
+        prefix = kwargs.get('id') if kwargs.get('prefix') != False else None
+        keys = ('bucket', 'object_name', 'filename', )
+        return _push_s3(**filter_dict(kwargs, keys), prefix=prefix, log=log)

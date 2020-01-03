@@ -60,7 +60,8 @@
 				{
 					"type": "object",
 					"properties": {
-						"to": { "const": "s3" }
+						"to": { "const": "s3" },
+						"prefix": { "type": "boolean" }
 					},
 					"required": [ "to", "bucket", "filename" ]
 				},

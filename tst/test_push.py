@@ -8,6 +8,7 @@ PUSH_S3 = {
     'to': 's3',
     'bucket': '__invalid',
     'filename': 'object',
+    'prefix': False,
 }
 
 class PushTest(TestCase):
@@ -35,3 +36,15 @@ class PushTest(TestCase):
 
         s3_mock.upload_file.assert_called()
         self.assertFalse(r)
+
+    @patch('boto3.client')
+    def test_prefixes_name_with_id_by_default(self, mock):
+        s3_mock = Mock()
+        mock.return_value = s3_mock
+
+        push_s3 = {**PUSH_S3}
+        del push_s3['prefix']
+        r = push(void_fn, id='ID', **push_s3)
+
+        s3_mock.upload_file.assert_called_with('object', '__invalid', 'ID-object')
+        self.assertTrue(r)

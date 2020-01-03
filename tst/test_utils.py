@@ -1,7 +1,7 @@
 from unittest import TestCase
 from time import time
 
-from pullnrun._utils import timestamp, as_list, create_meta, filter_dict, void_fn
+from pullnrun._utils import timestamp, as_list, create_meta, filter_dict, void_fn, prefix_object
 
 class UtilsTest(TestCase):
     def test_as_list_ensures_variable_is_list(self):
@@ -49,3 +49,9 @@ class UtilsTest(TestCase):
         self.assertIsNone(void_fn(1, 2, 3))
         self.assertIsNone(void_fn(asd=123))
         self.assertIsNone(void_fn(1, 2, 3, asd=123))
+
+    def test_prefix_object_prefixes_object_name(self):
+        self.assertEqual(prefix_object('a','b'), 'a-b')
+        self.assertEqual(prefix_object('b', 'a/c'), 'a/b-c')
+        self.assertEqual(prefix_object('b', 'a/c', '_'), 'b-a/c')
+        self.assertEqual(prefix_object('b', 'a_c', '_'), 'a_b-c')
