@@ -2,7 +2,7 @@ import subprocess
 
 from ._utils import timestamp, get_log_entry
 
-def run(log, command, directory=None):
+def run(log, command, directory=None, **_):
     kwargs = {
         'stdout': subprocess.PIPE,
         'stderr': subprocess.STDOUT,

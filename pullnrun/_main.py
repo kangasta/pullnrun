@@ -34,7 +34,7 @@ def main(input_dict, quiet=False):
 
     for stage, function in FUNCTION_MAPPINGS.items():
         for action in as_list(input_dict.get(stage)):
-            ok = function(log=log, **action)
+            ok = function(log=log, id=log.id, **action)
             if ok:
                 success += 1
             else:
