@@ -111,6 +111,10 @@ class Log:
         if self._to_console:
             log_to_console(log_entry)
 
+    @property
+    def id(self):
+        return self._id
+
     def start(self):
         self._start = timestamp()
         if self._to_console:
