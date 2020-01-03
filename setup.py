@@ -12,7 +12,7 @@ setuptools.setup(
 	description="A simple python app for running a set of commands from remote sources and pushing result files to remote targets.",
 	long_description=long_description,
 	long_description_content_type="text/markdown",
-	url="https://github.com/kangasta/pull-n-run",
+	url="https://github.com/kangasta/pullnrun",
 	packages=setuptools.find_packages(),
 	package_data={
 		'pullnrun': ['schema.json']
