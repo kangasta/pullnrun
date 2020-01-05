@@ -27,7 +27,8 @@ def _validate(input_dict):
 def main(input_dict, quiet=False):
     _validate(input_dict)
 
-    log = Log(quiet)
+    log_targets = input_dict.get('log')
+    log = Log(quiet, log_targets)
     log.start()
 
     success, error = (0, 0, )

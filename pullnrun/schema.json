@@ -84,6 +84,20 @@
 				"directory": { "type": "string" }
 			},
 			"required": [ "command" ]
+		},
+		"log_http": {
+			"type": "object",
+			"properties": {
+				"to": { "const": "url" },
+				"url": { "type": "string" },
+				"method": {"type": "string" }
+			},
+			"required": [ "to", "url" ]
+		},
+		"log": {
+			"oneOf": [
+				{ "$ref": "#/definitions/log_http" }
+			]
 		}
 	},
 	"type": "object",
@@ -113,6 +127,15 @@
 					"items": { "$ref" :"#/definitions/run" }
 				},
 				{ "$ref" :"#/definitions/run" }
+			]
+		},
+		"log": {
+			"oneOf": [
+				{
+					"type": "array",
+					"items": { "$ref" :"#/definitions/log" }
+				},
+				{ "$ref" :"#/definitions/log" }
 			]
 		}
 	}

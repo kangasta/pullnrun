@@ -1,7 +1,9 @@
 from os import getenv
 from uuid import uuid4
 
-from pullnrun._utils import get_log_entry, timestamp
+from requests import request
+
+from pullnrun._utils import as_list, get_log_entry, timestamp
 
 def _status(output_dict):
     status = output_dict.get('status')
@@ -100,16 +102,31 @@ def log_to_console(output_dict):
         end = '\n' if output[-1] != '\n' else ''
         print(f'\n{output}{end}')
 
+def log_to_url(url, id_, log_entry, method=None):
+    data = {
+        'id': id_,
+        'entry': log_entry,
+    }
+    request(method or 'POST', url, json=data)
+    # TODO: communicate errors
+
 class Log:
-    def __init__(self, quiet=False):
+    def __init__(self, quiet=False, targets=None):
         self._start = None
         self._end = None
         self._id = getenv('PULLNRUN_ID', str(uuid4()))
         self._to_console = not quiet
+        self._targets = as_list(targets)
 
-    def __call__(self, log_entry):
+    def _log(self, log_entry):
         if self._to_console:
             log_to_console(log_entry)
+        for target in self._targets:
+            if target.get('to') == 'url':
+                log_to_url(target.get('url'), self._id, log_entry, target.get('method'))
+
+    def __call__(self, log_entry):
+        self._log(log_entry)
 
     @property
     def id(self):
@@ -117,11 +134,13 @@ class Log:
 
     def start(self):
         self._start = timestamp()
-        if self._to_console:
-            log_to_console(get_log_entry('main', 'STARTED', start=self._start, id=self._id))
+        self._log(
+            get_log_entry('main', 'STARTED', start=self._start, id=self._id)
+        )
 
     def end(self, success, fail):
         self._end = timestamp()
         status = 'SUCCESS' if success > 0 and fail == 0 else 'ERROR'
-        if self._to_console:
-            log_to_console(get_log_entry('main', status, start=self._start, end=self._end, success=success, fail=fail))
+        self._log(
+            get_log_entry('main', status, start=self._start, end=self._end, success=success, fail=fail)
+        )
