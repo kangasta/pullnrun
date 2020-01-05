@@ -90,3 +90,25 @@ class LogTest(TestCase):
             output = print_mock.call_args[-2][0]
 
             self.assertIn(result, output)
+
+    @patch('builtins.print')
+    @patch('pullnrun._log.request')
+    def test_log_sends_entries_via_http(self, request_mock, print_mock):
+        log = Log(quiet=True, targets={'to': 'url', 'url': 'test_url', 'method': 'PUT'})
+
+        entry = {'type': 'run', 'status': 'STARTED'}
+        log(entry)
+
+        request_mock.assert_called_with('PUT', 'test_url', json={'id': log.id, 'entry': entry})
+        print_mock.assert_not_called()
+
+    @patch('builtins.print')
+    @patch('pullnrun._log.request')
+    def test_log_sends_entries_as_post_by_default(self, request_mock, print_mock):
+        log = Log(quiet=True, targets={'to': 'url', 'url': 'test_url'})
+
+        entry = {'type': 'run', 'status': 'STARTED'}
+        log(entry)
+
+        request_mock.assert_called_with('POST', 'test_url', json={'id': log.id, 'entry': entry})
+        print_mock.assert_not_called()
