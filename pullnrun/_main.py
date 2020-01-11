@@ -2,7 +2,7 @@ import json
 
 try:
     import importlib.resources as resources
-except ImportError:
+except ImportError: # pragma: no cover
     import importlib_resources as resources
 
 from jsonschema import validate
