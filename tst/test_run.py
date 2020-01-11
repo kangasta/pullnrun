@@ -27,7 +27,7 @@ class RunTest(TestCase):
 
         self.assertEqual(log.last['status'], 'FAIL')
 
-    @patch('subprocess.run', side_effect=KeyboardInterrupt)
+    @patch('subprocess.run', side_effect=Exception)
     def test_run_handles_failing_subprocess_run(self, mock_run):
         log = LogMock()
         self.assertFalse(run(log, ['cmd']))

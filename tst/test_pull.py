@@ -13,7 +13,9 @@ PULL_S3 = {
 class PullTest(TestCase):
     @patch('boto3.client', side_effect=NameError)
     def test_pull_s3_handles_missing_boto3(self, mock):
-        self.assertFalse(pull(void_fn, **PULL_S3))
+        log_fn = Mock()
+        self.assertFalse(pull(log_fn, **PULL_S3))
+        self.assertIn('boto3 library not found', log_fn.call_args[-2][0].get('errors')[0])
 
     @patch('boto3.client')
     def test_pull_s3_calls_download_file(self, mock):
@@ -28,7 +30,7 @@ class PullTest(TestCase):
     @patch('boto3.client')
     def test_pull_s3_handles_failing_download(self, mock):
         s3_mock = Mock()
-        s3_mock.download_file.side_effect = KeyboardInterrupt
+        s3_mock.download_file.side_effect = Exception
         mock.return_value = s3_mock
 
         r = pull(void_fn, **PULL_S3)

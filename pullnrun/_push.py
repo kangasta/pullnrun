@@ -13,6 +13,7 @@ def _push_http(filename, url, method='PUT', data=None, headers=None, log=void_fn
 
     start = timestamp()
     log(get_log_entry('push_http', status, start=start, url=url, filename=filename))
+    errors = []
 
     try:
         with open(filename, 'rb') as f:
@@ -21,11 +22,12 @@ def _push_http(filename, url, method='PUT', data=None, headers=None, log=void_fn
             status_code = r.status_code
             r.raise_for_status()
             status = 'SUCCESS'
-    except:
+    except Exception as e:
+        errors.append(f'Uploading the file failed. ({type(e).__name__})')
         status = 'ERROR'
     end = timestamp()
 
-    log(get_log_entry('push_http', status, start=start, end=end, url=url, filename=filename, status_code=status_code))
+    log(get_log_entry('push_http', status, start=start, end=end, url=url, filename=filename, status_code=status_code, errors=errors))
     return status == 'SUCCESS'
 
 def _push_s3(bucket, filename, object_name=None, prefix=None, log=void_fn):
@@ -36,22 +38,23 @@ def _push_s3(bucket, filename, object_name=None, prefix=None, log=void_fn):
 
     status = 'STARTED'
 
-    try:
-        s3 = boto3.client('s3')
-    except NameError:
-        pass
-
     start = timestamp()
     log(get_log_entry('push_s3', status, start=start, filename=filename, bucket=bucket, object_name=object_name))
+    errors = []
 
     try:
+        s3 = boto3.client('s3')
         s3.upload_file(filename, bucket, object_name)
         status = 'SUCCESS'
-    except:
+    except NameError:
+        status = 'ERROR'
+        errors.append('boto3 library not found. (NameError)')
+    except Exception as e:
+        errors.append(f'Uploading the file failed. ({type(e).__name__})')
         status = 'ERROR'
     end = timestamp()
 
-    log(get_log_entry('push_s3', status, start=start, end=end, filename=filename, bucket=bucket, object_name=object_name))
+    log(get_log_entry('push_s3', status, start=start, end=end, filename=filename, bucket=bucket, object_name=object_name, errors=errors))
     return status == 'SUCCESS'
 
 
