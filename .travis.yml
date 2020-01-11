@@ -1,15 +1,26 @@
 language: python
+
 python:
 - '3.6'
 - '3.7'
 - '3.8'
 - 3.8-dev
+
 install:
 - pip install -r requirements.txt
+
+before_script:
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
 script:
 - pylint -E */
 - coverage run --source ./ --omit setup.py,tst/* -m unittest discover tst/
 - coverage report -m
+after_script:
+- coverage xml
+- ./cc-test-reporter after-build --coverage-input-type coverage.py --exit-code $TRAVIS_TEST_RESULT
+
 deploy:
   provider: pypi
   user: __token__
