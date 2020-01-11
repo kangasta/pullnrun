@@ -22,6 +22,7 @@ def _pull_http(url, headers=None, filename=None, extract=False, log=void_fn):
 
     start = timestamp()
     log(get_log_entry('pull_http', status, url=url, filename=filename, start=start))
+    errors = []
 
     try:
         with get(url, headers=headers, stream=True) as r:
@@ -33,12 +34,13 @@ def _pull_http(url, headers=None, filename=None, extract=False, log=void_fn):
         if extract:
             unpack_archive(filename)
         status = 'SUCCESS'
-    except:
+    except Exception as e:
         status = 'ERROR'
+        errors.append(f'Downloading or unpacking the file failed. ({type(e).__name__})')
 
     end = timestamp()
 
-    log(get_log_entry('pull_http', status, url=url, filename=filename, status_code=status_code, extracted=extract, start=start, end=end))
+    log(get_log_entry('pull_http', status, url=url, filename=filename, status_code=status_code, extracted=extract, start=start, end=end, errors=errors))
     return status == 'SUCCESS'
 
 def _pull_s3(bucket, object_name, filename=None, log=void_fn):
@@ -47,22 +49,23 @@ def _pull_s3(bucket, object_name, filename=None, log=void_fn):
 
     status = 'STARTED'
 
-    try:
-        s3 = boto3.client('s3')
-    except NameError:
-        pass
-
     start = timestamp()
     log(get_log_entry('pull_s3', status, bucket=bucket, object_name=object_name, filename=filename, start=start))
+    errors = []
 
     try:
+        s3 = boto3.client('s3')
         s3.download_file(bucket, object_name, filename)
         status = 'SUCCESS'
-    except:
+    except NameError:
         status = 'ERROR'
+        errors.append('boto3 library not found. (NameError)')
+    except Exception as e:
+        status = 'ERROR'
+        errors.append(f'Downloading the file from S3 failed. ({type(e).__name__})')
     end = timestamp()
 
-    log(get_log_entry('pull_s3', status, bucket=bucket, object_name=object_name, filename=filename, start=start, end=end))
+    log(get_log_entry('pull_s3', status, bucket=bucket, object_name=object_name, filename=filename, start=start, end=end, errors=errors))
     return status == 'SUCCESS'
 
 def pull(log, **kwargs):

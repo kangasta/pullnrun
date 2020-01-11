@@ -3,6 +3,7 @@ __pycache__/
 
 # Test coverage
 .coverage
+htmlcov/
 
 # Build results
 build/

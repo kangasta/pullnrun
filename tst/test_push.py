@@ -14,7 +14,9 @@ PUSH_S3 = {
 class PushTest(TestCase):
     @patch('boto3.client', side_effect=NameError)
     def test_push_s3_handles_missing_boto3(self, mock):
-        self.assertFalse(push(void_fn, **PUSH_S3))
+        log_fn = Mock()
+        self.assertFalse(push(log_fn, **PUSH_S3))
+        self.assertIn('boto3 library not found', log_fn.call_args[-2][0].get('errors')[0])
 
     @patch('boto3.client')
     def test_push_s3_calls_upload_file(self, mock):
@@ -29,7 +31,7 @@ class PushTest(TestCase):
     @patch('boto3.client')
     def test_push_s3_handles_failing_upload(self, mock):
         s3_mock = Mock()
-        s3_mock.upload_file.side_effect = KeyboardInterrupt
+        s3_mock.upload_file.side_effect = Exception
         mock.return_value = s3_mock
 
         r = push(void_fn, **PUSH_S3)

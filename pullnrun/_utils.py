@@ -23,13 +23,18 @@ def create_meta(start, end, **kwargs):
 def filter_dict(dict_, keys):
     return {k: v for k, v in dict_.items() if k in keys}
 
-def get_log_entry(type_, status, start=None, end=None, **data):
-    return {
+def get_log_entry(type_, status, start=None, end=None, errors=None, **data):
+    entry = {
         'type': type_,
         'status': status,
         'data': data,
         'meta': create_meta(start, end)
     }
+
+    if errors:
+        entry['errors'] = errors
+
+    return entry
 
 def prefix_object(prefix, object_name, delimiter='/'):
     name_as_list = object_name.split(delimiter)
