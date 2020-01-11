@@ -1,6 +1,8 @@
 # pullnrun
 
 [![Build Status](https://travis-ci.org/kangasta/pullnrun.svg?branch=master)](https://travis-ci.org/kangasta/pullnrun)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7198c6ec9229ca477164/maintainability)](https://codeclimate.com/github/kangasta/pullnrun/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7198c6ec9229ca477164/test_coverage)](https://codeclimate.com/github/kangasta/pullnrun/test_coverage)
 
 A simple python app for running a set of commands from remote sources and pushing result files to remote targets.
 
