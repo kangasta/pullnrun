@@ -1,7 +1,9 @@
 from unittest import TestCase
 from time import time
 
-from pullnrun._utils import timestamp, as_list, create_meta, filter_dict, void_fn, prefix_object
+from jsonschema.exceptions import ValidationError
+
+from pullnrun._utils import timestamp, as_list, create_meta, filter_dict, get_log_entry, void_fn, prefix_object
 
 class UtilsTest(TestCase):
     def test_as_list_ensures_variable_is_list(self):
@@ -55,3 +57,21 @@ class UtilsTest(TestCase):
         self.assertEqual(prefix_object('b', 'a/c'), 'a/b-c')
         self.assertEqual(prefix_object('b', 'a/c', '_'), 'b-a/c')
         self.assertEqual(prefix_object('b', 'a_c', '_'), 'a_b-c')
+
+    def test_get_log_entry_validates_output(self):
+        data = [
+            (1, 'STARTED'),
+            ('run', None),
+            ('run', 'STARTED', "asd"),
+            ('run', 'STARTED', 123, None, [{'asd': 123}]),
+        ]
+
+        for i in data:
+            with self.assertRaises(ValidationError):
+                get_log_entry(*i)
+
+    def test_get_log_entry_check_data(self):
+        args = ('run', 'STARTED',)
+
+        with self.assertRaises(ValueError):
+            get_log_entry(*args, invalid=(i for i in range(5)))
