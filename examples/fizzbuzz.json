@@ -1,5 +1,5 @@
 {
-	"$schema": "../pullnrun/schema.json",
+	"$schema": "../pullnrun/schemas/input.json",
 	"pull": {
 		"from": "url",
 		"url": "https://gist.githubusercontent.com/kangasta/7a923e37a544df779552c95ac67f55e8/raw/525d82f42a0fe89f1fb378cb61d8d27d2a006372/fizzbuzz.py"

@@ -1,6 +1,13 @@
 import json
 from time import time
 
+try:
+    import importlib.resources as resources
+except ImportError: # pragma: no cover
+    import importlib_resources as resources
+
+from jsonschema import validate
+
 def as_list(a):
     if isinstance(a, list):
         return a
@@ -24,6 +31,11 @@ def filter_dict(dict_, keys):
     return {k: v for k, v in dict_.items() if k in keys}
 
 def get_log_entry(type_, status, start=None, end=None, errors=None, **data):
+    try:
+        json.dumps(data)
+    except:
+        raise ValueError('data should be JSON serializable')
+
     entry = {
         'type': type_,
         'status': status,
@@ -34,6 +46,7 @@ def get_log_entry(type_, status, start=None, end=None, errors=None, **data):
     if errors:
         entry['errors'] = errors
 
+    validate_dict(entry, 'log_entry')
     return entry
 
 def prefix_object(prefix, object_name, delimiter='/'):
@@ -43,6 +56,10 @@ def prefix_object(prefix, object_name, delimiter='/'):
 
 def timestamp():
     return int(time() * 1000)
+
+def validate_dict(input_dict, schema_name):
+    schema = json.loads(resources.read_text('pullnrun.schemas', f'{schema_name}.json'))
+    validate(instance=input_dict, schema=schema)
 
 def void_fn(*_args, **_kwargs):
     return None

@@ -1,13 +1,4 @@
-import json
-
-try:
-    import importlib.resources as resources
-except ImportError: # pragma: no cover
-    import importlib_resources as resources
-
-from jsonschema import validate
-
-from ._utils import as_list
+from ._utils import as_list, validate_dict
 from ._log import Log
 
 from ._pull import pull
@@ -20,12 +11,8 @@ FUNCTION_MAPPINGS = {
     'push': push,
 }
 
-def _validate(input_dict):
-    schema = json.loads(resources.read_text('pullnrun', 'schema.json'))
-    validate(instance=input_dict, schema=schema)
-
 def main(input_dict, quiet=False):
-    _validate(input_dict)
+    validate_dict(input_dict, 'input')
 
     log_targets = input_dict.get('log')
     log = Log(quiet, log_targets)
