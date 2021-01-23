@@ -9,7 +9,3 @@ htmlcov/
 build/
 dist/
 *.egg-info/
-
-# Files pulled by examples
-**/fizzbuzz.py
-**/check_online_status.robot
