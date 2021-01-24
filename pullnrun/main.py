@@ -88,7 +88,7 @@ def main(plan):
         console.input(f'# Execute task: {name or function_name}')
         function = functions.get(function_name)
         if not function:
-            console.error(f'Function not found for {str(e)}.')
+            console.error(f'Function not found for {function_name}.')
             stats.add('unknown')
             if settings.stop_on_errors:
                 break
