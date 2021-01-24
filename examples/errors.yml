@@ -1,0 +1,16 @@
+name: Errors demo
+stop_on_errors: no
+tasks:
+- name: Run Failing command
+  run_command:
+    command: sh -c "exit 255"
+- name: Run Failing script
+  run_script:
+    script:
+    - sh -c "exit 0"
+    - sh -c "exit 1"
+    - sh -c "exit 2"
+  stop_on_errors: yes
+- name: Run Failing command (skipped)
+  run_command:
+    command: sh -c "exit 255"

@@ -1,6 +1,5 @@
 .
 
 # Development requirements
-boto3
 coverage
 pylint
