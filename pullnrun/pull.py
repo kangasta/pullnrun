@@ -18,23 +18,24 @@ def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
     console.input(f'# Pull repository from {url}')
 
     if not target:
-        match = re.search(r'/([^/]*).git/{0,1}$', url)
-        target = match.group(1) if match else ''
+        target = '.'
 
-    if target and path.isdir(target):
-        commands = [
+    if target and path.isdir(f'{target}/.git'):
+        pull_cmds = [
             'git fetch',
-            f'git checkout origin/{branch or "HEAD"}'
+            f'git checkout -q origin/{branch or "HEAD"}'
         ]
-        cwd = target
     else:
         branch_option = f'--branch {branch}' if branch else ''
-        commands = [
-            f'git clone {branch_option} {url} {target}'
+        pull_cmds = [
+            f'git clone -q {branch_option} {url} {target}'
         ]
-        cwd = None
 
-    return run_script(commands, settings, cwd=cwd)
+    return run_script([
+        'git --version',
+        *pull_cmds,
+        'git rev-parse HEAD',
+    ], settings, cwd=target)
 
 
 def pull_http(url, method='GET', filename=None, extract=False, settings=DEFAULT_SETTINGS, **kwargs):

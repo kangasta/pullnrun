@@ -10,7 +10,7 @@
     {
       "name": "Execute script",
       "run_command": {
-        "command": ["python3", "7a923e37a544df779552c95ac67f55e8/fizzbuzz.py", "30"]
+        "command": ["python3", "fizzbuzz.py", "30"]
       }
     }
   ]

@@ -6,7 +6,7 @@ from pullnrun.main import get_args, load_plan_from_file, main, NO_PLAN
 def entrypoint():
     args = get_args()
     if args.version:
-        print(__version__)
+        print(f'pullnrun {__version__}')
         return
 
     try:

@@ -1,8 +1,10 @@
 from argparse import ArgumentParser
-import json
 from datetime import datetime
+import json
+import sys
 import yaml
 
+from ._version import __version__
 from .builtin import functions
 from .utils.console import JsonStreams
 from .utils.settings import Settings, DEFAULT_SETTINGS_DICT
@@ -72,7 +74,10 @@ def main(plan):
 
     started = datetime.utcnow()
     tasks = plan.get('tasks')
-    console.input(text=f'# Start plan execution{_name(plan)}')
+    console.input(f'# Start plan execution{_name(plan)}')
+    console.log(f'pullnrun {__version__}')
+    console.log(f'python {sys.version}')
+    console.log(sys.executable)
 
     for i, task in enumerate(tasks, start=1):
         try:
