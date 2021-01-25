@@ -25,6 +25,6 @@ def push_http(
         r.raise_for_status()
     except Exception as e:
         console.error(f'Pushing {filename or "data"} failed: {str(e)}')
-        return (False, console.data, )
+        return dict(success=False, console_data=console.data, )
 
-    return (True, console.data, )
+    return dict(success=True, console_data=console.data, )

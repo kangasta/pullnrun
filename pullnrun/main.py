@@ -9,28 +9,12 @@ from .builtin import functions
 from .utils.console import JsonStreams
 from .utils.settings import Settings, DEFAULT_SETTINGS_DICT
 from .utils.statistics import Statistics
+from .utils.task import parse_result, parse_task
 from .validate import validate_plan
 
 
 INVALID_PLAN = 251
 NO_PLAN = 252
-
-
-def _parse_task(task, settings):
-    task_settings = settings(task)
-
-    task = {**task}
-    name = task.pop('name', None)
-    for key in settings.keys():
-        task.pop(key, None)
-
-    if len(task.keys()) != 1:
-        raise ValueError(
-            'Task must contain exactly one function key, '
-            f'but {len(task.keys())} were given ({", ".join(task.keys())}).')
-    function_name, parameters = next(i for i in task.items())
-
-    return (name, function_name, parameters, task_settings,)
 
 
 def _name(input_dict):
@@ -94,7 +78,7 @@ def main(plan):
     for i, task in enumerate(tasks, start=1):
         try:
             console.input(f'# Parse task {i}/{len(tasks)}{_name(task)}')
-            name, function_name, parameters, settings = _parse_task(
+            name, function_name, parameters, settings = parse_task(
                 task, plan_settings)
         except ValueError as e:
             console.error(f'Failed to parse task: {str(e)}')
@@ -118,7 +102,8 @@ def main(plan):
                 continue
 
         try:
-            success, console_data = function(**parameters, settings=settings)
+            success, console_data = parse_result(
+                function(**parameters, settings=settings))
         except Exception as e:
             console.error(f'Caught error raised from task: {str(e)}')
             if settings.stop_on_errors:

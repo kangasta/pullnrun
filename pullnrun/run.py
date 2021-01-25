@@ -3,6 +3,7 @@ from subprocess import run
 
 from .utils.console import JsonStreams, command_as_str
 from .utils.settings import DEFAULT_SETTINGS
+from .utils.task import parse_result
 
 
 def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):
@@ -20,17 +21,21 @@ def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):
             bufsize=0,
             **kwargs)
 
-    return (process.returncode == 0, streams.read(wait=True),)
+    return dict(
+        success=process.returncode == 0,
+        console_data=streams.read(wait=True),
+    )
 
 
 def run_script(script, settings=DEFAULT_SETTINGS, **kwargs):
     console_data = []
 
     for command in script:
-        success, new_lines = run_command(command, settings, **kwargs)
+        success, new_lines = parse_result(
+            run_command(command, settings, **kwargs))
         console_data.extend(new_lines)
 
         if settings.stop_on_errors and not success:
-            return (False, console_data,)
+            return dict(success=False, console_data=console_data, )
 
-    return (True, console_data, )
+    return dict(success=True, console_data=console_data, )

@@ -64,7 +64,7 @@ def pull_http(
             console.log(f'Writing {filename} completed.')
     except Exception as e:
         console.error(f'Pulling {filename} failed: {str(e)}')
-        return (False, console.data, )
+        return dict(success=False, console_data=console.data, )
 
     if extract:
         try:
@@ -73,6 +73,6 @@ def pull_http(
             console.log('Unpacking succeeded.')
         except Exception as e:
             console.error(f'Unpacking failed: {str(e)}')
-            return (False, console.data, )
+            return dict(success=False, console_data=console.data, )
 
-    return (True, console.data, )
+    return dict(success=True, console_data=console.data, )
