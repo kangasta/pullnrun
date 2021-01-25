@@ -2,4 +2,5 @@
 
 # Development requirements
 coverage
+flask
 pylint

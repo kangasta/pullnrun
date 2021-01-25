@@ -1,9 +1,8 @@
 INITIAL_STATS = dict(
     success = 0,
+    ignored= 0,
     fail = 0,
     error = 0,
-    invalid = 0,
-    unknown = 0,
 )
 
 class Statistics:
@@ -16,3 +15,6 @@ class Statistics:
     def as_str(self, width=10):
         return '\n'.join(
             f'{key.title() + ":":{width}} {value}' for key, value in self._data.items())
+
+    def __getattr__(self, name):
+        return self._data.get(name)

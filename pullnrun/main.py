@@ -68,6 +68,7 @@ def main(plan):
     except Exception as e:
         print(f'Failed to validate plan: {str(e)}')
         exit(INVALID_PLAN)
+
     plan_settings = Settings(DEFAULT_SETTINGS_DICT)(plan)
     stats = Statistics()
     console = JsonStreams(plan_settings.log_to_console)
@@ -86,25 +87,31 @@ def main(plan):
                 task, plan_settings)
         except ValueError as e:
             console.error(f'Failed to parse task: {str(e)}')
-            stats.add('invalid')
             if settings.stop_on_errors:
+                stats.add('error')
                 break
+            else:
+                stats.add('ignored')
 
         console.input(f'# Execute task: {name or function_name}')
         function = functions.get(function_name)
         if not function:
             console.error(f'Function not found for {function_name}.')
-            stats.add('unknown')
             if settings.stop_on_errors:
+                stats.add('error')
                 break
+            else:
+                stats.add('ignored')
 
         try:
             success, console_data = function(**parameters, settings=settings)
         except Exception as e:
             console.error(f'Caught error raised from task: {str(e)}')
-            stats.add('error')
             if settings.stop_on_errors:
+                stats.add('error')
                 break
+            else:
+                stats.add('ignored')
 
         console.extend(console_data)
         stats.add('success' if success else 'fail')
@@ -120,3 +127,18 @@ def main(plan):
     console.log(stats.as_str(10))
 
     return (started, elapsed, stats, console.data)
+
+def entrypoint():
+    args = get_args()
+    if args.version:
+        print(f'pullnrun {__version__}')
+        return
+
+    try:
+        plan = load_plan_from_file(args.plan_file)
+    except ValueError as e:
+        print(str(e))
+        exit(NO_PLAN)
+
+    _, _, stats, _ = main(plan)
+    exit(stats.error + stats.fail)

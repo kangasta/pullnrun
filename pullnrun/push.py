@@ -11,12 +11,11 @@ def push_http(url, method='PUT', filename=None, settings=DEFAULT_SETTINGS, **kwa
     try:
         if filename:
             with open(filename, 'rb') as f:
-                files = {'file': (filename, f)}
-                r = request(method, url, files=files, **kwargs)
+                r = request(method, url, files=dict(file=f), **kwargs)
         else:
             r = request(method, url, **kwargs)
 
-        console.log(f'{method.title()} {filename or "data"} returned {status_code}.')
+        console.log(f'{method.title()} {filename or "data"} returned {r.status_code}.')
         r.raise_for_status()
     except Exception as e:
         console.error(f'Pushing {filename or "data"} failed: {str(e)}')
