@@ -1,28 +1,4 @@
 #!/usr/bin/env python3
 
-import json
-import os
-from argparse import ArgumentParser
-
-from pullnrun import main
-
-def run():
-	parser = ArgumentParser()
-	parser.add_argument("input_json", type=str, nargs='?', help='Input JSON')
-	parser.add_argument('--env', '-e', action='store_true', help='Get input JSON from PULLNRUN environment variable')
-	parser.add_argument('--file', '-f', type=str, help='Load input JSON from file')
-
-	args = parser.parse_args()
-
-	if args.input_json:
-		inline_input = json.loads(args.input_json)
-		main(inline_input)
-	if args.env:
-		env_input = json.loads(os.getenv('PULLNRUN'))
-		main(env_input)
-	if args.file:
-		with open(args.file, 'r') as f:
-			file_input = json.load(f)
-		main(file_input)
-
-run()
+from pullnrun.main import entrypoint
+entrypoint()

@@ -1,0 +1,19 @@
+name: Simple commands demo
+tasks:
+- name: Run single command (array)
+  run_command:
+    command:
+    - echo
+    - Run single command
+- name: Run single command (str)
+  run_command:
+    command: echo "Run single command"
+- name: Run Failing command
+  run_command:
+    command: sh -c "exit 255"
+  stop_on_errors: no
+- name: Run multiple commands (str)
+  run_script:
+    script:
+    - pwd
+    - echo $USER

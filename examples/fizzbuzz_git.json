@@ -1,0 +1,37 @@
+{
+  "name": "Fetch script and execute it locally",
+  "tasks": [
+    {
+      "name": "Fetch script",
+      "pull_git": {
+        "url": "https://gist.github.com/7a923e37a544df779552c95ac67f55e8.git"
+      }
+    },
+    {
+      "name": "Execute script",
+      "run_command": {
+        "command": [
+          "python3",
+          "fizzbuzz.py",
+          "30"
+        ]
+      }
+    },
+    {
+      "name": "Fetch script",
+      "pull_git": {
+        "url": "https://gist.github.com/7a923e37a544df779552c95ac67f55e8.git"
+      }
+    },
+    {
+      "name": "Execute script",
+      "run_command": {
+        "command": [
+          "python3",
+          "fizzbuzz.py",
+          "30"
+        ]
+      }
+    }
+  ]
+}

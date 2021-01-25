@@ -1,10 +1,36 @@
 {
-	"$schema": "../pullnrun/schemas/input.json",
-	"pull": {
-		"from": "url",
-		"url": "https://gist.githubusercontent.com/kangasta/7a923e37a544df779552c95ac67f55e8/raw/525d82f42a0fe89f1fb378cb61d8d27d2a006372/fizzbuzz.py"
-	},
-	"run": {
-		"command": ["python3", "fizzbuzz.py", "30"]
-	}
+  "name": "Fetch script and execute it locally",
+  "tasks": [
+    {
+      "name": "Fetch script",
+      "pull_http": {
+        "url": "https://gist.githubusercontent.com/kangasta/7a923e37a544df779552c95ac67f55e8/raw/525d82f42a0fe89f1fb378cb61d8d27d2a006372/fizzbuzz.py"
+      }
+    },
+    {
+      "name": "Execute script",
+      "run_command": {
+        "command": ["python3", "fizzbuzz.py", "30"]
+      }
+    },
+    {
+      "name": "Delete script",
+      "run_command": {
+        "command": ["rm", "-f", "fizzbuzz.py"]
+      }
+    },
+    {
+      "name": "Fetch script",
+      "pull_http": {
+        "url": "https://gist.github.com/kangasta/7a923e37a544df779552c95ac67f55e8/archive/525d82f42a0fe89f1fb378cb61d8d27d2a006372.zip",
+        "extract": true
+      }
+    },
+    {
+      "name": "Execute script",
+      "run_command": {
+        "command": ["python3", "7a923e37a544df779552c95ac67f55e8-525d82f42a0fe89f1fb378cb61d8d27d2a006372/fizzbuzz.py", "30"]
+      }
+    }
+  ]
 }

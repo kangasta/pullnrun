@@ -1,0 +1,11 @@
+name: Invalid tasks
+stop_on_errors: no
+tasks:
+- name: Too many functions
+  pull_http:
+  pull_git:
+- name: No function
+- name: Invalid parameters
+  pull_http:
+- name: Invalid function
+  cow:

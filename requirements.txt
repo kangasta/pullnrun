@@ -1,6 +1,10 @@
 .
 
-# Development requirements
-boto3
+# Static analysis
+pycodestyle
+pylint
+
+# Unittest
 coverage
+flask
 pylint

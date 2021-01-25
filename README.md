@@ -22,19 +22,28 @@ See [examples](./examples) for usage examples.
 
 ## Testing
 
-For unittests and linting, run:
+Check and automatically fix formatting with:
 
 ```bash
-# Unittests
-python3 -m unittest discover tst/
+pycodestyle pullnrun
+autopep8 -aaar --in-place pullnrun
+```
 
-# Unittests with coverage
-coverage run --source ./ --omit setup.py,tst/* -m unittest discover tst/
+Run static analysis with:
+
+```bash
+pylint -E --enable=invalid-name,unused-import,useless-object-inheritance pullnrun
+```
+
+Run unit tests with command:
+
+```bash
+python3 -m unittest discover -s tst/
+```
+
+Get test coverage with commands:
+
+```bash
+coverage run --branch --source pullnrun/ -m unittest discover -s tst/
 coverage report -m
-
-# Linting error check
-pylint -E */
-
-# Full linting output
-pylint */
 ```
