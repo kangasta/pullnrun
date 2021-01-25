@@ -3,6 +3,7 @@ DEFAULT_SETTINGS_DICT = dict(
     stop_on_errors=True,
 )
 
+
 class Settings:
     def __init__(self, defaults):
         self._data = {**defaults}
@@ -29,5 +30,6 @@ class Settings:
 
     def __getattr__(self, name):
         return self._data.get(name)
+
 
 DEFAULT_SETTINGS = Settings(DEFAULT_SETTINGS_DICT)

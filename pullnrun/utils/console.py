@@ -17,7 +17,7 @@ def _current_timestamp():
 
 
 def _get_stream(stream_name):
-    if not stream_name in ['stderr', 'stdin', 'stdout']:
+    if stream_name not in ['stderr', 'stdin', 'stdout']:
         raise ValueError(
             'Value of stream_name must be stderr, stdin, or stdout.')
 

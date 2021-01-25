@@ -9,9 +9,16 @@ def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):
     if isinstance(command, str):
         command = shlex.split(command)
 
-    with JsonStreams(log_to_console=settings.log_to_console) as (stdout, stderr, streams):
+    with JsonStreams(
+        log_to_console=settings.log_to_console
+    ) as (stdout, stderr, streams):
         streams.push('stdin', text=command_as_str(command))
-        process = run(command, stderr=stderr, stdout=stdout, bufsize=0, **kwargs)
+        process = run(
+            command,
+            stderr=stderr,
+            stdout=stdout,
+            bufsize=0,
+            **kwargs)
 
     return (process.returncode == 0, streams.read(wait=True),)
 

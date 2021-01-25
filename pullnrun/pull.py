@@ -1,17 +1,18 @@
+from .utils.settings import DEFAULT_SETTINGS
+from .utils.console import JsonStreams
 from os import path
-import re
 from shutil import unpack_archive
 
 from requests import request
 
-from.run import run_command, run_script
-from .utils.console import JsonStreams
-from .utils.settings import DEFAULT_SETTINGS
+from.run import run_script
+
 
 def _write_to_file(response, filename):
     with open(filename, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=1<<20): # 1 MB
-            if chunk: f.write(chunk)
+        for chunk in response.iter_content(chunk_size=1 << 20):  # 1 MB
+            if chunk:
+                f.write(chunk)
 
 
 def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
@@ -39,7 +40,13 @@ def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
     ], settings, cwd=target)
 
 
-def pull_http(url, method='GET', filename=None, extract=False, settings=DEFAULT_SETTINGS, **kwargs):
+def pull_http(
+        url,
+        method='GET',
+        filename=None,
+        extract=False,
+        settings=DEFAULT_SETTINGS,
+        **kwargs):
     console = JsonStreams(settings.log_to_console)
     console.input(f'# Pull {filename or "file"} from {url}')
 

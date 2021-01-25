@@ -25,7 +25,9 @@ def _parse_task(task, settings):
         task.pop(key, None)
 
     if len(task.keys()) != 1:
-        raise ValueError(f'Task must contain exactly one function key, but {len(task.keys())} were given ({", ".join(task.keys())}).')
+        raise ValueError(
+            'Task must contain exactly one function key, '
+            f'but {len(task.keys())} were given ({", ".join(task.keys())}).')
     function_name, parameters = next(i for i in task.items())
 
     return (name, function_name, parameters, task_settings,)
@@ -41,8 +43,15 @@ def _name(input_dict):
 
 def get_args():
     parser = ArgumentParser()
-    parser.add_argument('plan_file', type=str, nargs='?', help='Load execution plan from JSON or YAML file.')
-    parser.add_argument('--version', action='store_true', help='Print version information.')
+    parser.add_argument(
+        'plan_file',
+        type=str,
+        nargs='?',
+        help='Load execution plan from JSON or YAML file.')
+    parser.add_argument(
+        '--version',
+        action='store_true',
+        help='Print version information.')
 
     return parser.parse_args()
 
@@ -57,7 +66,9 @@ def load_plan_from_file(filename):
         elif filename.endswith('.yaml') or filename.endswith('.yml'):
             plan = yaml.load(f, Loader=yaml.SafeLoader)
         else:
-            raise ValueError('Failed to recognize file type. File extension must be json, yaml, or yml.')
+            raise ValueError(
+                'Failed to recognize file type. '
+                'File extension must be json, yaml, or yml.')
 
     return plan
 
@@ -87,11 +98,13 @@ def main(plan):
                 task, plan_settings)
         except ValueError as e:
             console.error(f'Failed to parse task: {str(e)}')
+            settings = plan_settings(task)
             if settings.stop_on_errors:
                 stats.add('error')
                 break
             else:
                 stats.add('ignored')
+                continue
 
         console.input(f'# Execute task: {name or function_name}')
         function = functions.get(function_name)
@@ -102,6 +115,7 @@ def main(plan):
                 break
             else:
                 stats.add('ignored')
+                continue
 
         try:
             success, console_data = function(**parameters, settings=settings)
@@ -112,6 +126,7 @@ def main(plan):
                 break
             else:
                 stats.add('ignored')
+                continue
 
         console.extend(console_data)
         stats.add('success' if success else 'fail')
@@ -127,6 +142,7 @@ def main(plan):
     console.log(stats.as_str(10))
 
     return (started, elapsed, stats, console.data)
+
 
 def entrypoint():
     args = get_args()

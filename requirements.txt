@@ -1,6 +1,10 @@
 .
 
-# Development requirements
+# Static analysis
+pycodestyle
+pylint
+
+# Unittest
 coverage
 flask
 pylint
