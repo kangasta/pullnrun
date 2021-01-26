@@ -1,4 +1,4 @@
-def parse_task(task, settings):
+def parse_task(task, env, settings):
     task_settings = settings(task)
 
     task = {**task}
@@ -12,8 +12,12 @@ def parse_task(task, settings):
             f'but {len(task.keys())} were given ({", ".join(task.keys())}).')
     function_name, parameters = next(i for i in task.items())
 
+    if task_settings.resolve_templates:
+        parameters = env.resolve_templates(parameters)
+
     return (name, function_name, parameters, task_settings,)
 
 
 def parse_result(result):
-    return (result.get('success'), result.get('console_data'), )
+    return (result.get('success'), result.get(
+        'console_data'), result.get('vars'), )

@@ -33,11 +33,17 @@ def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
             f'git clone -q {branch_option} {url} {target}'
         ]
 
-    return run_script([
+    r = run_script([
         'git --version',
         *pull_cmds,
         'git rev-parse HEAD',
     ], settings, cwd=target)
+
+    if target == '.':
+        commit = r.get('console_data')[-1].get('text')
+        r['vars'] = dict(pullnrun_git_commit=commit)
+
+    return r
 
 
 def pull_http(

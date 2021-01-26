@@ -8,6 +8,9 @@ tasks:
 - name: Run single command (str)
   run_command:
     command: echo "Run single command"
+- name: Echo last result
+  run_command:
+    command: "echo {{ pullnrun_last_result.success }}"
 - name: Run Failing command
   run_command:
     command: sh -c "exit 255"
