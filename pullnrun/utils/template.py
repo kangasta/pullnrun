@@ -1,10 +1,23 @@
-from jinja2 import Environment as _J2_Environment
 import json
+
+from jinja2 import Environment as _J2_Environment, StrictUndefined
+
+
+def to_json_filter(value):
+    str(value)  # Raises UndefinedError if value is StrictUndefined
+    return json.dumps(value)
 
 
 class Environment(_J2_Environment):
     def __init__(self, *args, **kwargs):
+        kwargs = {
+            'undefined': StrictUndefined,
+            **kwargs,
+        }
+
         super().__init__(*args, **kwargs)
+
+        self.filters['to_json'] = to_json_filter
 
     def register(self, name, value):
         self.globals[name] = value
@@ -24,11 +37,11 @@ class Environment(_J2_Environment):
             return str_in
 
         if self._is_template(str_in):
-            str_in = str_in.replace('}}', ' | tojson }}')
+            str_in = str_in.replace('}}', ' | to_json }}')
         template = self.from_string(str_in)
         rendered = template.render()
 
-        if 'tojson' in str_in:
+        if 'to_json' in str_in:
             try:
                 return json.loads(rendered)
             except Exception:
