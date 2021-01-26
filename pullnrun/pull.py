@@ -1,4 +1,4 @@
-from .utils.settings import DEFAULT_SETTINGS
+from .utils.data import DEFAULT_SETTINGS
 from .utils.console import JsonStreams
 from os import path
 from shutil import unpack_archive

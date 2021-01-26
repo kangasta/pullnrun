@@ -7,11 +7,9 @@ import yaml
 from jinja2 import __version__ as _jinja2_version
 
 from ._version import __version__
-from .builtin import functions
+from .execute import execute_task
 from .utils.console import JsonStreams
-from .utils.settings import Settings, DEFAULT_SETTINGS_DICT
-from .utils.statistics import Statistics
-from .utils.task import parse_result, parse_task
+from .utils.data import Settings, DEFAULT_SETTINGS_DICT, Statistics
 from .utils.template import Environment
 from .validate import validate_plan
 
@@ -75,65 +73,30 @@ def main(plan):
     started = datetime.utcnow()
     tasks = plan.get('tasks')
     console.input(f'# Start plan execution{_name(plan)}')
+
+    if plan.get('description'):
+        console.log(plan.get('description'))
+
+    console.input(f'# Print versions')
     console.log(f'pullnrun {__version__}')
     console.log(f'jinja2 {_jinja2_version}')
     console.log(f'python {sys.version}')
     console.log(sys.executable)
     env.register('pullnrun_python_executable', sys.executable)
+    env.register('pullnrun_task_count', len(tasks))
+
+    task_results = []
 
     for i, task in enumerate(tasks, start=1):
-        task_i = f'{i}/{len(tasks)}'
-        try:
-            console.input(f'# Parse task {task_i}{_name(task)}')
-            name, function_name, parameters, settings = parse_task(
-                task, env, plan_settings)
-        except ValueError as e:
-            console.error(f'Failed to parse task: {str(e)}')
-            settings = plan_settings(task)
-            if settings.stop_on_errors:
-                stats.add('error')
-                break
-            else:
-                stats.add('ignored')
-                continue
+        env.register('pullnrun_task_index', i)
 
-        if not settings.when:
-            console.input(f'# Skip task{_name(task)}')
-            stats.add('skipped')
-            continue
+        task_result = execute_task(task, plan_settings, env)
 
-        console.input(f'# Execute task: {name or function_name}')
-        function = functions.get(function_name)
-        if not function:
-            console.error(f'Function not found for {function_name}.')
-            if settings.stop_on_errors:
-                stats.add('error')
-                break
-            else:
-                stats.add('ignored')
-                continue
-
-        try:
-            result = function(**parameters, settings=settings)
-            success, console_data, new_vars = parse_result(result)
-        except Exception as e:
-            console.error(f'Caught error raised from task: {str(e)}')
-            if settings.stop_on_errors:
-                stats.add('error')
-                break
-            else:
-                stats.add('ignored')
-                continue
-
-        if settings.register:
-            env.register(settings.register, result)
-        if new_vars:
-            for key, value in new_vars.items():
-                env.register(key, value)
-
-        console.extend(console_data)
-        stats.add('success' if success else 'fail')
-        if not success and settings.stop_on_errors:
+        task_results.append(task_result)
+        result = task_result.get('result')
+        stats.add(result)
+        env.register('pullnrun_last_result', result)
+        if result in ('error', 'fail',):
             break
 
     elapsed = (datetime.utcnow() - started).total_seconds()
