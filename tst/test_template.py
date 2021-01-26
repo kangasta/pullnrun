@@ -1,6 +1,8 @@
 import os
 import yaml
 
+from jinja2.exceptions import UndefinedError
+
 from unittest import TestCase
 
 from pullnrun.utils.template import Environment
@@ -21,3 +23,8 @@ class TemplateTest(TestCase):
 
             r = env.resolve_templates(in_)
             self.assertEqual(r, out)
+
+    def test_undefined(self):
+        env = Environment()
+        with self.assertRaises(UndefinedError):
+            env.resolve_templates('{{ undefined_var }}')
