@@ -1,9 +1,9 @@
 import shlex
 from subprocess import run
 
-from .utils.console import JsonStreams, command_as_str
-from .utils.data import DEFAULT_SETTINGS
-from .utils.task import parse_return_value
+from pullnrun.utils.console import JsonStreams, command_as_str
+from pullnrun.utils.data import DEFAULT_SETTINGS
+from pullnrun.utils.task import parse_return_value
 
 
 def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):

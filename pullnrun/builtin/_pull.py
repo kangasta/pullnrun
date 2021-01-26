@@ -1,12 +1,12 @@
-from .utils.data import DEFAULT_SETTINGS
-from .utils.console import JsonStreams
 from os import path
 from shutil import unpack_archive
 
 from requests import request
 
-from.run import run_script
+from pullnrun.utils.data import DEFAULT_SETTINGS
+from pullnrun.utils.console import JsonStreams
 
+from ._run import run_script
 
 def _write_to_file(response, filename):
     with open(filename, 'wb') as f:

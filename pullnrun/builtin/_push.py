@@ -1,7 +1,7 @@
 from requests import request
 
-from .utils.console import JsonStreams
-from .utils.data import DEFAULT_SETTINGS
+from pullnrun.utils.console import JsonStreams
+from pullnrun.utils.data import DEFAULT_SETTINGS
 
 
 def push_http(
