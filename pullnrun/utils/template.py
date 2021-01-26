@@ -65,3 +65,6 @@ class Environment(_J2_Environment):
             return self._resolve_dict(item)
         else:
             return item
+
+    def resolve_expression(self, expr):
+        return self.compile_expression(expr)()

@@ -3,6 +3,7 @@ DEFAULT_SETTINGS_DICT = dict(
     stop_on_errors=True,
     resolve_templates=True,
     register='pullnrun_last_result',
+    when=True,
 )
 
 

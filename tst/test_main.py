@@ -134,3 +134,18 @@ class MainTest(TestCase):
                     entrypoint()
 
             exit_mock.assert_called_with(1)
+
+    @patch('builtins.exit')
+    @patch('builtins.print')
+    def test_main_when(self, print_mock, exit_mock):
+        console = TestConsole()
+        print_mock.side_effect = console.print_mock_implementation
+
+        with TemporaryDirectory() as tmp_dir_path:
+            os.chdir(tmp_dir_path)
+
+            with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/when.yml']):
+                entrypoint()
+
+        exit_mock.assert_called_with(1)
+        self.assertRegex(console.content, r'Skipped:\s*3')
