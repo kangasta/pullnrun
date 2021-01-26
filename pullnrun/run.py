@@ -2,8 +2,8 @@ import shlex
 from subprocess import run
 
 from .utils.console import JsonStreams, command_as_str
-from .utils.settings import DEFAULT_SETTINGS
-from .utils.task import parse_result
+from .utils.data import DEFAULT_SETTINGS
+from .utils.task import parse_return_value
 
 
 def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):
@@ -31,7 +31,7 @@ def run_script(script, settings=DEFAULT_SETTINGS, **kwargs):
     console_data = []
 
     for command in script:
-        success, new_lines, _ = parse_result(
+        success, new_lines, _ = parse_return_value(
             run_command(command, settings, **kwargs))
         console_data.extend(new_lines)
 

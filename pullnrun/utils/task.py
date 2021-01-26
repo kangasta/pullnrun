@@ -1,4 +1,34 @@
+from datetime import datetime
+
 from jinja2.exceptions import UndefinedError
+
+from .data import Data, Meta
+
+
+class Task(Data):
+    def __init__(self, meta, function_name, parameters, settings, error=None):
+        super().__init__(dict(
+            **meta.json,
+            started=datetime.utcnow(),
+            function=function_name,
+            parameters=parameters,
+            settings=settings,
+        ))
+        self.error = error
+
+    def result(self, console, result, return_value=None):
+        if result in ('error', 'fail',) and not self.settings.stop_on_errors:
+            result = 'ignored'
+
+        json = {**self.json, 'started': f'{self.started.isoformat()}Z', }
+
+        return dict(
+            **json,
+            elapsed=(datetime.utcnow() - self.started).total_seconds(),
+            console_data=console.data,
+            result=result,
+            return_value=return_value,
+        )
 
 
 def _parse_task_settings(task, env, settings):
@@ -13,32 +43,33 @@ def _parse_task_settings(task, env, settings):
     }
 
     task_settings = settings(task)
-    name = task.pop('name', None)
+    meta = Meta(task)
 
-    for key in settings.keys():
+    for key in [*settings.keys(), *meta.keys()]:
         task.pop(key, None)
 
-    return (name, task, task_settings)
+    return (meta, task, task_settings)
 
 
 def parse_task(task, env, settings):
-    name, task, task_settings = _parse_task_settings(task, env, settings)
+    meta, task, task_settings = _parse_task_settings(task, env, settings)
 
     if not task_settings.when:
-        return (name, None, None, task_settings)
+        return Task(meta, None, None, task_settings)
 
     if len(task.keys()) != 1:
-        raise ValueError(
+        error = (
             'Task must contain exactly one function key, '
             f'but {len(task.keys())} were given ({", ".join(task.keys())}).')
+        return Task(meta, None, None, task_settings, error=error)
     function_name, parameters = next(i for i in task.items())
 
     if task_settings.resolve_templates:
         parameters = env.resolve_templates(parameters)
 
-    return (name, function_name, parameters, task_settings,)
+    return Task(meta, function_name, parameters, task_settings,)
 
 
-def parse_result(result):
+def parse_return_value(result):
     return (result.get('success'), result.get(
         'console_data'), result.get('vars'), )

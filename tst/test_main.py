@@ -54,11 +54,15 @@ class MainTest(TestCase):
     @patch('builtins.exit')
     @patch('builtins.print')
     def test_main_errors(self, print_mock, exit_mock):
+        console = TestConsole()
+        print_mock.side_effect = console.print_mock_implementation
+
         with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/errors.yml']):
             entrypoint()
 
         print_mock.assert_any_call(f'pullnrun {__version__}', file=stdout)
-        exit_mock.assert_called_with(2)
+        exit_mock.assert_called_with(1)
+        self.assertRegex(console.content, r'Ignored:\s*1')
 
     @patch('builtins.exit')
     @patch('builtins.print')
@@ -147,5 +151,6 @@ class MainTest(TestCase):
             with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/when.yml']):
                 entrypoint()
 
-        exit_mock.assert_called_with(1)
+        exit_mock.assert_called_with(0)
         self.assertRegex(console.content, r'Skipped:\s*3')
+        self.assertRegex(console.content, r'Ignored:\s*1')
