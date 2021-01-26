@@ -31,7 +31,7 @@ def run_script(script, settings=DEFAULT_SETTINGS, **kwargs):
     console_data = []
 
     for command in script:
-        success, new_lines = parse_result(
+        success, new_lines, _ = parse_result(
             run_command(command, settings, **kwargs))
         console_data.extend(new_lines)
 

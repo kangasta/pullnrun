@@ -4,12 +4,15 @@ import json
 import sys
 import yaml
 
+from jinja2 import __version__ as _jinja2_version
+
 from ._version import __version__
 from .builtin import functions
 from .utils.console import JsonStreams
 from .utils.settings import Settings, DEFAULT_SETTINGS_DICT
 from .utils.statistics import Statistics
 from .utils.task import parse_result, parse_task
+from .utils.template import Environment
 from .validate import validate_plan
 
 
@@ -64,6 +67,7 @@ def main(plan):
         print(f'Failed to validate plan: {str(e)}')
         exit(INVALID_PLAN)
 
+    env = Environment()
     plan_settings = Settings(DEFAULT_SETTINGS_DICT)(plan)
     stats = Statistics()
     console = JsonStreams(plan_settings.log_to_console)
@@ -72,14 +76,16 @@ def main(plan):
     tasks = plan.get('tasks')
     console.input(f'# Start plan execution{_name(plan)}')
     console.log(f'pullnrun {__version__}')
+    console.log(f'jinja2 {_jinja2_version}')
     console.log(f'python {sys.version}')
     console.log(sys.executable)
+    env.register('pullnrun_python_executable', sys.executable)
 
     for i, task in enumerate(tasks, start=1):
         try:
             console.input(f'# Parse task {i}/{len(tasks)}{_name(task)}')
             name, function_name, parameters, settings = parse_task(
-                task, plan_settings)
+                task, env, plan_settings)
         except ValueError as e:
             console.error(f'Failed to parse task: {str(e)}')
             settings = plan_settings(task)
@@ -102,8 +108,8 @@ def main(plan):
                 continue
 
         try:
-            success, console_data = parse_result(
-                function(**parameters, settings=settings))
+            result = function(**parameters, settings=settings)
+            success, console_data, new_vars = parse_result(result)
         except Exception as e:
             console.error(f'Caught error raised from task: {str(e)}')
             if settings.stop_on_errors:
@@ -112,6 +118,12 @@ def main(plan):
             else:
                 stats.add('ignored')
                 continue
+
+        if settings.register:
+            env.register(settings.register, result)
+        if new_vars:
+            for key, value in new_vars.items():
+                env.register(key, value)
 
         console.extend(console_data)
         stats.add('success' if success else 'fail')

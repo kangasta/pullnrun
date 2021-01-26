@@ -8,10 +8,17 @@
       }
     },
     {
+      "name": "Print commit",
+      "run_command": {
+        "command": "echo {{ pullnrun_git_commit }}"
+      },
+      "stop_on_errors": false
+    },
+    {
       "name": "Execute script",
       "run_command": {
         "command": [
-          "python3",
+          "{{ pullnrun_python_executable }}",
           "fizzbuzz.py",
           "30"
         ]
@@ -27,7 +34,7 @@
       "name": "Execute script",
       "run_command": {
         "command": [
-          "python3",
+          "{{ pullnrun_python_executable }}",
           "fizzbuzz.py",
           "30"
         ]

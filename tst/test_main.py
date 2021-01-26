@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import yaml
 
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from _push_target import request_mock_implementation
 
