@@ -12,6 +12,10 @@ def command_as_str(command):
                     else f"'{i}'" for i in command)
 
 
+def detail(detail):
+    return f': {detail}' if detail else ''
+
+
 def _current_timestamp():
     return f'{datetime.utcnow().isoformat()}Z'
 
@@ -60,13 +64,16 @@ class JsonStreams:
         self.close()
 
     def log(self, text):
-        return self.push('stdout', text=text)
+        if text:
+            return self.push('stdout', text=text)
 
     def input(self, text):
-        return self.push('stdin', text=text)
+        if text:
+            return self.push('stdin', text=text)
 
     def error(self, text):
-        return self.push('stderr', text=text)
+        if text:
+            return self.push('stderr', text=text)
 
     def push(self, stream_name=None, timestamp=None, text=None):
         if not (stream_name and text):

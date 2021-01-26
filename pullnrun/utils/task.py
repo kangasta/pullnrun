@@ -20,7 +20,11 @@ class Task(Data):
         if result in ('error', 'fail',) and not self.settings.stop_on_errors:
             result = 'ignored'
 
-        json = {**self.json, 'started': f'{self.started.isoformat()}Z', }
+        json = {
+            **self.json,
+            'started': f'{self.started.isoformat()}Z',
+            'settings': self.settings.json,
+        }
 
         return dict(
             **json,

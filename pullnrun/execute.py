@@ -1,14 +1,8 @@
+import traceback
+
 from .builtin import functions
-from .utils.console import JsonStreams
+from .utils.console import JsonStreams, detail
 from .utils.task import parse_task, parse_return_value
-
-
-def _name(input_dict):
-    name = input_dict.get('name')
-    if not name:
-        return ''
-
-    return f': {name}'
 
 
 def execute_task(task_data, plan_settings, env):
@@ -25,13 +19,13 @@ def execute_task(task_data, plan_settings, env):
         return task.result(console, 'error')
 
     if not task.settings.when:
-        console.input(f'# Skip task {task_progress}{_name(task_data)}')
+        console.input(f'# Skip task{task_progress}{detail(task.name)}')
         return task.result(console, 'skipped')
 
     console.input(
         f'# Execute task{task_progress}: {task.name or task.function}')
-    if task.description:
-        console.log(task.description)
+    console.log(task.description)
+
     function = functions.get(task.function)
     if not function:
         console.error(f'Function not found for {task.function}.')
@@ -42,6 +36,8 @@ def execute_task(task_data, plan_settings, env):
         success, console_data, new_vars = parse_return_value(return_value)
     except Exception as e:
         console.error(f'Caught error raised from task: {str(e)}')
+        if task.settings.debug:
+            console.error(traceback.format_exc())
         return task.result(console, 'error')
 
     if task.settings.register:

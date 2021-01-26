@@ -23,7 +23,7 @@ class Environment(_J2_Environment):
         self.globals[name] = value
 
     def get(self, name):
-        self.globals.get(name)
+        return self.globals.get(name)
 
     def _contains_template(self, str_in):
         has_start = self.variable_start_string in str_in
