@@ -8,6 +8,7 @@ from pullnrun.utils.console import JsonStreams
 
 from ._run import run_script
 
+
 def _write_to_file(response, filename):
     with open(filename, 'wb') as f:
         for chunk in response.iter_content(chunk_size=1 << 20):  # 1 MB

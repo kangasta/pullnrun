@@ -4,8 +4,6 @@ import json
 import sys
 import yaml
 
-from jinja2 import __version__ as _jinja2_version
-
 from ._version import __version__
 from .execute import execute_task
 from .utils.console import JsonStreams
@@ -58,6 +56,9 @@ def load_plan_from_file(filename):
     return plan
 
 
+LOG_VERSIONS = dict(name='Log versions', log_versions={})
+
+
 def main(plan):
     try:
         validate_plan(plan)
@@ -77,15 +78,13 @@ def main(plan):
     if plan.get('description'):
         console.log(plan.get('description'))
 
-    console.input(f'# Print versions')
-    console.log(f'pullnrun {__version__}')
-    console.log(f'jinja2 {_jinja2_version}')
-    console.log(f'python {sys.version}')
-    console.log(sys.executable)
     env.register('pullnrun_python_executable', sys.executable)
     env.register('pullnrun_task_count', len(tasks))
 
     task_results = []
+
+    # Pre tasks currently only includes version logging
+    task_results.append(execute_task(LOG_VERSIONS, plan_settings, env))
 
     for i, task in enumerate(tasks, start=1):
         env.register('pullnrun_task_index', i)

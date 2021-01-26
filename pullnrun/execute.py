@@ -16,19 +16,20 @@ def execute_task(task_data, plan_settings, env):
 
     task_index = env.get('pullnrun_task_index')
     task_count = env.get('pullnrun_task_count')
+    task_progress = (
+        f' {task_index}/{task_count}' if task_index and task_count else '')
 
-    console.input(
-        f'# Parse task {task_index}/{task_count}{_name(task_data)}')
     task = parse_task(task_data, env, plan_settings)
     if task.error:
         console.error(f'Failed to parse task: {task.error}')
         return task.result(console, 'error')
 
     if not task.settings.when:
-        console.input(f'# Skip task{_name(task_data)}')
+        console.input(f'# Skip task {task_progress}{_name(task_data)}')
         return task.result(console, 'skipped')
 
-    console.input(f'# Execute task: {task.name or task.function}')
+    console.input(
+        f'# Execute task{task_progress}: {task.name or task.function}')
     if task.description:
         console.log(task.description)
     function = functions.get(task.function)
