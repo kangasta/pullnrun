@@ -82,8 +82,9 @@ def main(plan):
     env.register('pullnrun_python_executable', sys.executable)
 
     for i, task in enumerate(tasks, start=1):
+        task_i = f'{i}/{len(tasks)}'
         try:
-            console.input(f'# Parse task {i}/{len(tasks)}{_name(task)}')
+            console.input(f'# Parse task {task_i}{_name(task)}')
             name, function_name, parameters, settings = parse_task(
                 task, env, plan_settings)
         except ValueError as e:
@@ -95,6 +96,11 @@ def main(plan):
             else:
                 stats.add('ignored')
                 continue
+
+        if not settings.when:
+            console.input(f'# Skip task{_name(task)}')
+            stats.add('skipped')
+            continue
 
         console.input(f'# Execute task: {name or function_name}')
         function = functions.get(function_name)

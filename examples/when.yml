@@ -1,0 +1,23 @@
+name: When demo
+stop_on_errors: no
+tasks:
+- name: Failing task
+  run_command:
+    command: cat .not_found
+  register: fail_result
+- name: Successful task
+  run_command:
+    command: echo Hello
+  register: success_result
+  when: not fail_result.success
+- name: When with name
+  run_command:
+    command: echo asd
+  when: fail_result.success
+- run_command:
+    command: echo asd
+  when: "not success_result.success"
+- name: When with undefined var
+  run_command:
+    command: echo asd
+  when: undefined_var == 3

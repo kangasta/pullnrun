@@ -3,6 +3,7 @@ INITIAL_STATS = dict(
     ignored=0,
     fail=0,
     error=0,
+    skipped=0,
 )
 
 
