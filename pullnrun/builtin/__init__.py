@@ -1,6 +1,6 @@
-from .pull import pull_http, pull_git
-from .push import push_http
-from .run import run_command, run_script
+from ._pull import pull_http, pull_git
+from ._push import push_http
+from ._run import run_command, run_script
 
 functions = dict(
     pull_git=pull_git,

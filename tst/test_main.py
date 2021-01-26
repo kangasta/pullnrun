@@ -86,7 +86,7 @@ class MainTest(TestCase):
 
     @patch('builtins.exit')
     @patch('builtins.print')
-    @patch('pullnrun.push.request')
+    @patch('pullnrun.builtin._push.request')
     def test_main_push_http(self, request_mock, print_mock, exit_mock):
         request_mock.side_effect = request_mock_implementation
         with TemporaryDirectory() as tmp_dir_path:
