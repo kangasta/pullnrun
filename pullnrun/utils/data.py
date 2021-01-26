@@ -21,6 +21,7 @@ class Meta(Data):
 
 
 DEFAULT_SETTINGS_DICT = dict(
+    debug=False,
     log_to_console=True,
     stop_on_errors=True,
     resolve_templates=True,
@@ -64,8 +65,8 @@ INITIAL_STATS = dict(
 
 
 class Statistics(Data):
-    def __init__(self):
-        super().__init__(INITIAL_STATS)
+    def __init__(self, data=None):
+        super().__init__(data or INITIAL_STATS)
 
     def add(self, key):
         self._data[key] = self._data[key] + 1

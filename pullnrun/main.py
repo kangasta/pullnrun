@@ -6,22 +6,14 @@ import yaml
 
 from ._version import __version__
 from .execute import execute_task
-from .utils.console import JsonStreams
-from .utils.data import Settings, DEFAULT_SETTINGS_DICT, Statistics
+from .utils.console import JsonStreams, detail
+from .utils.data import Meta, Settings, DEFAULT_SETTINGS_DICT, Statistics
 from .utils.template import Environment
 from .validate import validate_plan
 
 
 INVALID_PLAN = 251
 NO_PLAN = 252
-
-
-def _name(input_dict):
-    name = input_dict.get('name')
-    if not name:
-        return ''
-
-    return f': {name}'
 
 
 def get_args():
@@ -57,6 +49,10 @@ def load_plan_from_file(filename):
 
 
 LOG_VERSIONS = dict(name='Log versions', log_versions={})
+LOG_STATISTICS = dict(
+    name='Log statistics',
+    log_plan_statistics=dict(
+        plan_return_value="{{ pullnrun_plan_return_value }}"))
 
 
 def main(plan):
@@ -73,19 +69,21 @@ def main(plan):
 
     started = datetime.utcnow()
     tasks = plan.get('tasks')
-    console.input(f'# Start plan execution{_name(plan)}')
+    meta = Meta(plan)
 
-    if plan.get('description'):
-        console.log(plan.get('description'))
+    console.input(f'# Start plan execution{detail(meta.name)}')
+    console.log(meta.description)
 
     env.register('pullnrun_python_executable', sys.executable)
     env.register('pullnrun_task_count', len(tasks))
 
     task_results = []
 
+    console.input(text=f'# Run pre-tasks')
     # Pre tasks currently only includes version logging
     task_results.append(execute_task(LOG_VERSIONS, plan_settings, env))
 
+    console.input(text=f'# Run tasks')
     for i, task in enumerate(tasks, start=1):
         env.register('pullnrun_task_index', i)
 
@@ -99,12 +97,21 @@ def main(plan):
             break
 
     elapsed = (datetime.utcnow() - started).total_seconds()
+    console.input(text=f'# Plan execution completed{detail(meta.name)}')
 
-    console.input(text=f'# Plan execution completed{_name(plan)}')
-    console.input(text=f'# Execution statistics{_name(plan)}')
-    console.log(f'{"Started:":10} {started.isoformat()}Z')
-    console.log(f'{"Elapsed:":10} {elapsed} s')
-    console.log(stats.as_str(10))
+    plan_return_value = dict(
+        **meta.json,
+        started=f'{started.isoformat()}Z',
+        elapsed=elapsed,
+        task_return_values=task_results,
+        statistics=stats.json,
+        settings=plan_settings.json,
+    )
+    env.register('pullnrun_plan_return_value', plan_return_value)
+
+    console.input(text=f'# Run post-tasks')
+    # Post tasks currently only includes statistics logging
+    execute_task(LOG_STATISTICS, plan_settings, env)
 
     return (started, elapsed, stats, console.data)
 
