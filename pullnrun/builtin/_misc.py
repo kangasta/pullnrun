@@ -1,4 +1,5 @@
 import os
+import platform
 import sys
 
 from jinja2 import __version__ as _jinja2_version, Environment, PackageLoader
@@ -6,6 +7,16 @@ from jinja2 import __version__ as _jinja2_version, Environment, PackageLoader
 from pullnrun import __version__
 from pullnrun.utils.data import Data, DEFAULT_SETTINGS, Statistics
 from pullnrun.utils.console import JsonStreams, detail
+
+
+def echo(settings=DEFAULT_SETTINGS, **kwargs):
+    console = JsonStreams(settings.log_to_console)
+
+    console.input(f'# Echo values')
+    for key, value in kwargs.items():
+        console.log(f'{key}: {value}')
+
+    return dict(success=True, console_data=console.data, )
 
 
 def log_versions(settings=DEFAULT_SETTINGS):
@@ -16,6 +27,7 @@ def log_versions(settings=DEFAULT_SETTINGS):
     console.log(f'jinja2 {_jinja2_version}')
     console.log(f'python {sys.version}')
     console.log(sys.executable)
+    console.log(platform.platform())
 
     return dict(success=True, console_data=console.data, )
 
