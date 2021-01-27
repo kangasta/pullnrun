@@ -1,9 +1,11 @@
+import inspect
 import os
 import platform
 import sys
 
 from jinja2 import __version__ as _jinja2_version, Environment, PackageLoader
 
+import pullnrun
 from pullnrun import __version__
 from pullnrun.utils.data import Data, DEFAULT_SETTINGS, Statistics
 from pullnrun.utils.console import JsonStreams, detail
@@ -28,6 +30,7 @@ def log_versions(settings=DEFAULT_SETTINGS):
     console.log(f'python {sys.version}')
     console.log(sys.executable)
     console.log(platform.platform())
+    console.log(inspect.getfile(pullnrun))
 
     return dict(success=True, console_data=console.data, )
 

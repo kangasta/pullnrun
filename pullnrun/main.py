@@ -5,6 +5,7 @@ import sys
 import yaml
 
 from ._version import __version__
+from .builtin import log_versions
 from .execute import execute_task
 from .utils.console import JsonStreams, detail
 from .utils.data import Meta, Settings, DEFAULT_SETTINGS_DICT, Statistics
@@ -35,6 +36,10 @@ def get_args():
         '--version',
         action='store_true',
         help='Print version information.')
+    parser.add_argument(
+        '--long-version',
+        action='store_true',
+        help='Print detailed version information.')
 
     return parser.parse_args()
 
@@ -156,6 +161,9 @@ def entrypoint():
     args = get_args()
     if args.version:
         print(f'pullnrun {__version__}')
+        return
+    if args.long_version:
+        log_versions()
         return
 
     try:
