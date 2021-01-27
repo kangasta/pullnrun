@@ -105,6 +105,8 @@ def main(plan, report):
         if result in ('error', 'fail',):
             break
 
+    env.register('pullnrun_task_index', None)
+
     elapsed = (datetime.utcnow() - started).total_seconds()
     console.input(text=f'# Plan execution completed{detail(meta.name)}')
 
