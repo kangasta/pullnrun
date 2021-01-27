@@ -1,3 +1,4 @@
+import os
 import sys
 
 from jinja2 import __version__ as _jinja2_version, Environment, PackageLoader
@@ -37,12 +38,17 @@ def _prefix_if(str_in, prefix, condition):
 
 
 def generate_report(plan_return_value, settings=DEFAULT_SETTINGS):
+    console = JsonStreams(settings.log_to_console)
+
     env = Environment(loader=PackageLoader('pullnrun'))
     env.filters['prefix_if'] = _prefix_if
     template = env.get_template('report.html.j2')
     stream = template.stream(**plan_return_value)
 
-    with open(f'pullnrun_report.html', 'w') as f:
+    report_filename = 'pullnrun_report.html'
+    with open(report_filename, 'w') as f:
         stream.dump(f)
+
+    console.log(f'Log available in {os.path.realpath(report_filename)}')
 
     return dict(success=True, console_data=[], )
