@@ -23,7 +23,7 @@ setuptools.setup(
     url="https://github.com/kangasta/pullnrun",
     packages=setuptools.find_packages(),
     package_data={
-        'pullnrun': ['schemas/*.yml']
+        'pullnrun': ['schemas/*.yml', 'templates/*.j2']
     },
     scripts=["bin/pullnrun"],
     install_requires=[

@@ -9,3 +9,6 @@ htmlcov/
 build/
 dist/
 *.egg-info/
+
+# Report file
+pullnrun_report.html

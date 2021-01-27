@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <title>{{ name | default('Execution') }} report</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        font-family: sans-serif;
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      main {
+        box-sizing: border-box;
+        flex: 1;
+        margin: auto;
+        margin-top: 1em;
+        max-width: 1150px;
+        overflow: hidden;
+        padding: 2em 1em 3em;
+      }
+
+      footer {
+        margin: auto;
+        max-width: 1150px;
+        padding: 2em 0 0.5em;
+        text-align: center;
+      }
+
+      h2 {
+        margin-top: 1.75em;
+      }
+
+      h3 {
+        border-top: 1px dotted;
+        margin-top: 2.5em;
+        padding-top: 0.5em;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      tr.header th,tr.header td {
+        border-bottom: 1px solid;
+      }
+
+      th:first-of-type,td:first-of-type {
+        border-right: 1px solid;
+      }
+
+      td {
+        border-top: 1px dotted;
+      }
+
+      th.key {
+        width: 15%;
+      }
+
+      th.value {
+        width: 85%;
+      }
+
+      th,td {
+        box-sizing: border-box;
+        padding: 0.5em;
+      }
+
+      code {
+        background: #eee;
+        border-radius: 0.125em;
+        display: inline-block;
+        line-height: 1.25em;
+        padding: 0.25em;
+      }
+
+      code.console {
+        display: block;
+        font-family: monospace;
+        padding: 1em 0.5em;
+        white-space: pre-wrap;
+      }
+
+      code.console span.console-timestamp {
+        color: #666;
+        font-style: normal;
+        font-weight: normal;
+      }
+
+      code.console .stderr {
+        color: #b00b13;
+        font-weight: bold;
+      }
+
+      code.console .stdin {
+        color: #13700b;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>{{ name | default('Execution') }} report</h1>
+      {% if description %}
+        <p class='description'>{{ description }}</p>
+      {% endif %}
+      <h2>Statistics</h2>
+      <table class="statistics">
+        <tr class="header">
+          <th class="key">Property</th>
+          <th class="value">Value</th>
+        </tr>
+        <tr>
+          <td>Started</td>
+          <td>
+            <code>{{ started }}</code>
+          </td>
+        </tr>
+        <tr>
+          <td>Elapsed</td>
+          <td>{{ elapsed }} s</td>
+        </tr>
+        {% for key, value in statistics.items() %}
+        <tr>
+          <td>{{ key | title}}</td>
+          <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <h2>Tasks</h2>
+      {% for task in task_return_values %}
+        {% if task.name %}
+          <h3>{{ task.name or default(task.index) }}</h3>
+        {% else %}
+          <h3>Task {{ task.index }}</h3>
+        {% endif %}
+        {% if task.description %}
+          <p class='description'>{{ task.description }}</p>
+        {% endif %}
+        <h4>Task definition</h4>
+        <table class="task">
+          <tr class="header">
+            <th class="key">Property</th>
+            <th class="value">Value</th>
+          </tr>
+          <tr>
+            <td>Result</td>
+            <td>{{ task.result }}</td>
+          </tr>
+          <tr>
+            <td>Started</td>
+            <td>
+              <code>{{ task.started }}</code>
+            </td>
+          </tr>
+          <tr>
+            <td>Elapsed</td>
+            <td>{{ task.elapsed }} s</td>
+          </tr>
+          <tr>
+            <td>Function</td>
+            <td><code>{{ task.function }}</code></td>
+          </tr>
+          <tr>
+            <td>Parameters</td>
+            <td><code>{{ task.parameters | tojson }}</code></td>
+          </tr>
+          <tr>
+            <td>Settings</td>
+            <td><code>{{ task.settings | tojson }}</code></td>
+          </tr>
+          <tr>
+            <td>Return value</td>
+            <td><code>{{ task.return_value | tojson }}</code></td>
+          </tr>
+        </table>
+        <h4>Console output</h4>
+        <code class="console">
+        {%- for line in task.console_data -%}
+          <div class="{{ line.stream }}"><span class="console-timestamp">{{ line.timestamp[11:-4] }}Z </span>{{ line.text | prefix_if('+ ', line.stream == 'stdin') | replace('+ # ', '# ') }}</div>
+        {%- endfor -%}
+        </code>
+      {% endfor %}
+    </main>
+    <footer>pullnrun {{ version }}</footer>
+  </body>
+</html>

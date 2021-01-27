@@ -1,10 +1,12 @@
 class Data:
     def __init__(self, defaults):
-        self._data = {**defaults}
+        super().__setattr__('_data', {**defaults})
 
     def __getattr__(self, name):
-        self._data[name]  # Raise KeyError for unknown keys
         return self._data.get(name)
+
+    def __setattr__(self, name, value):
+        self._data[name] = value
 
     @property
     def json(self):
