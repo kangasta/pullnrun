@@ -1,4 +1,6 @@
 name: Push demo
+tags:
+- example
 tasks:
 - name: Push data
   push_http:

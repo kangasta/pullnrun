@@ -28,6 +28,10 @@ def get_args():
         action='store_true',
         help='Generate a HTML report.')
     parser.add_argument(
+        '-t', '--tags',
+        type=str,
+        help='Comma separated list of tags to describe the environment.')
+    parser.add_argument(
         '--version',
         action='store_true',
         help='Print version information.')
@@ -63,7 +67,7 @@ GENERATE_REPORT = dict(
     when="pullnrun_generate_report")
 
 
-def main(plan, report):
+def main(plan, report, env_tags=None):
     try:
         validate_plan(plan)
     except Exception as e:
@@ -77,6 +81,7 @@ def main(plan, report):
 
     started = datetime.utcnow()
     tasks = plan.get('tasks')
+    plan_tags = plan.get('tags')
     meta = Meta(plan)
 
     console.input(f'# Start plan execution{detail(meta.name)}')
@@ -84,6 +89,8 @@ def main(plan, report):
 
     env.register('pullnrun_python_executable', sys.executable)
     env.register('pullnrun_generate_report', report)
+    env.register('pullnrun_environment_tags', env_tags or [])
+    env.register('pullnrun_plan_tags', plan_tags or [])
     env.register('pullnrun_task_count', len(tasks))
 
     task_results = []
@@ -117,6 +124,10 @@ def main(plan, report):
         task_return_values=task_results,
         statistics=stats.json,
         settings=plan_settings.json,
+        tags=dict(
+            environment=env_tags or [],
+            plan=plan_tags or [],
+        ),
         version=__version__,
     )
     env.register('pullnrun_plan_return_value', plan_return_value)
@@ -141,6 +152,7 @@ def entrypoint():
         print(str(e))
         exit(NO_PLAN)
 
-    plan = main(plan, args.report)
+    tags = args.tags.split(',') if args.tags else None
+    plan = main(plan, args.report, tags)
     stats = Statistics(plan.get('statistics'))
     exit(stats.error + stats.fail)
