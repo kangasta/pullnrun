@@ -67,6 +67,14 @@ GENERATE_REPORT = dict(
     when="pullnrun_generate_report")
 
 
+def _get_log_builtin_vars(dict_in):
+    return dict(
+        name='Log builtin variables',
+        echo={
+            key: value for key,
+            value in dict_in.items() if key.startswith('pullnrun_')})
+
+
 def main(plan, report, env_tags=None):
     try:
         validate_plan(plan)
@@ -88,6 +96,7 @@ def main(plan, report, env_tags=None):
     console.log(meta.description)
 
     env.register('pullnrun_python_executable', sys.executable)
+    env.register('pullnrun_sys_platform', sys.platform)
     env.register('pullnrun_generate_report', report)
     env.register('pullnrun_environment_tags', env_tags or [])
     env.register('pullnrun_plan_tags', plan_tags or [])
@@ -96,8 +105,11 @@ def main(plan, report, env_tags=None):
     task_results = []
 
     console.input(text=f'# Run pre-tasks')
-    # Pre tasks currently only includes version logging
-    task_results.append(execute_task(LOG_VERSIONS, plan_settings, env))
+    # Pre tasks currently only includes version and builtin vars logging
+    pre_settings = plan_settings(dict(register=False))
+    task_results.append(execute_task(LOG_VERSIONS, pre_settings, env))
+    task_results.append(
+        execute_task(_get_log_builtin_vars(env.globals), pre_settings, env))
 
     console.input(text=f'# Run tasks')
     for i, task in enumerate(tasks, start=1):

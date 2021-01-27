@@ -1,9 +1,10 @@
-from ._misc import generate_report, log_plan_statistics, log_versions
+from ._misc import echo, generate_report, log_plan_statistics, log_versions
 from ._pull import pull_http, pull_git
 from ._push import push_http
 from ._run import run_command, run_script
 
 functions = dict(
+    echo=echo,
     generate_report=generate_report,
     log_plan_statistics=log_plan_statistics,
     log_versions=log_versions,
