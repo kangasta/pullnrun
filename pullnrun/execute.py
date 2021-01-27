@@ -8,14 +8,10 @@ from .utils.task import parse_task, parse_return_value
 def execute_task(task_data, plan_settings, env):
     console = JsonStreams(plan_settings.log_to_console)
 
-    task_index = env.get('pullnrun_task_index')
-    task_count = env.get('pullnrun_task_count')
-    task_progress = (
-        f' {task_index}/{task_count}' if task_index and task_count else '')
-
     task = parse_task(task_data, env, plan_settings)
+    task_progress = f' {task.index}' if task.index else ''
     if task.error:
-        console.error(f'Failed to parse task: {task.error}')
+        console.error(f'Failed to parse task{task_progress}: {task.error}')
         return task.result(console, 'error')
 
     if not task.settings.when:

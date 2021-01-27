@@ -58,6 +58,11 @@ def _parse_task_settings(task, env, settings):
 def parse_task(task, env, settings):
     meta, task, task_settings = _parse_task_settings(task, env, settings)
 
+    task_index = env.get('pullnrun_task_index')
+    task_count = env.get('pullnrun_task_count')
+    meta.index = (
+        f'{task_index}/{task_count}' if task_index and task_count else None)
+
     if not task_settings.when:
         return Task(meta, None, None, task_settings)
 

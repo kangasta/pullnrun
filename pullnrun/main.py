@@ -24,6 +24,10 @@ def get_args():
         nargs='?',
         help='Load execution plan from JSON or YAML file.')
     parser.add_argument(
+        '--report',
+        action='store_true',
+        help='Generate a HTML report.')
+    parser.add_argument(
         '--version',
         action='store_true',
         help='Print version information.')
@@ -53,9 +57,13 @@ LOG_STATISTICS = dict(
     name='Log statistics',
     log_plan_statistics=dict(
         plan_return_value="{{ pullnrun_plan_return_value }}"))
+GENERATE_REPORT = dict(
+    name='Generate HTML report', generate_report=dict(
+        plan_return_value="{{ pullnrun_plan_return_value }}"),
+    when="pullnrun_generate_report")
 
 
-def main(plan):
+def main(plan, report):
     try:
         validate_plan(plan)
     except Exception as e:
@@ -75,6 +83,7 @@ def main(plan):
     console.log(meta.description)
 
     env.register('pullnrun_python_executable', sys.executable)
+    env.register('pullnrun_generate_report', report)
     env.register('pullnrun_task_count', len(tasks))
 
     task_results = []
@@ -106,14 +115,16 @@ def main(plan):
         task_return_values=task_results,
         statistics=stats.json,
         settings=plan_settings.json,
+        version=__version__,
     )
     env.register('pullnrun_plan_return_value', plan_return_value)
 
     console.input(text=f'# Run post-tasks')
     # Post tasks currently only includes statistics logging
     execute_task(LOG_STATISTICS, plan_settings, env)
+    execute_task(GENERATE_REPORT, plan_settings, env)
 
-    return (started, elapsed, stats, console.data)
+    return plan_return_value
 
 
 def entrypoint():
@@ -128,5 +139,6 @@ def entrypoint():
         print(str(e))
         exit(NO_PLAN)
 
-    _, _, stats, _ = main(plan)
+    plan = main(plan, args.report)
+    stats = Statistics(plan.get('statistics'))
     exit(stats.error + stats.fail)
