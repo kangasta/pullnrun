@@ -1,4 +1,6 @@
 name: Simple commands demo
+tags:
+- example
 tasks:
 - name: Run single command (array)
   run_command:

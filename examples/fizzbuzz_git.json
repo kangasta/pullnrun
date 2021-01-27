@@ -1,5 +1,6 @@
 {
   "name": "Fetch script and execute it locally",
+  "tags": ["example"],
   "tasks": [
     {
       "name": "Fetch script",

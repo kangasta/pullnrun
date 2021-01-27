@@ -78,6 +78,26 @@
         line-height: 1.25em;
       }
 
+      span.plan-tag, span.environment-tag {
+        background: var(--text-grey);
+        border-radius: 0.75em;
+        color: var(--background);
+        display: inline-block;
+        font-size: 1em;
+        line-height: normal;
+        margin-right: 0.25em;
+        padding: 0.125em 0.5em;
+        text-align: center;
+      }
+
+      span.plan-tag {
+        background: var(--text-blue);
+      }
+
+      span.environment-tag {
+        background: var(--text-red);
+      }
+
       .table-title {
         color: var(--text-secondary);
         font-size: 1rem;
@@ -184,6 +204,16 @@
             <td>Elapsed</td>
             <td>{{ elapsed }} s</td>
           </tr>
+          {% for source in ['plan', 'environment'] %}
+            <tr>
+              <td>{{ source | title }} tags</td>
+              <td>
+                {% for tag in tags[source] %}
+                  <span class="{{ source }}-tag">{{ tag }}</span>
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
           {% for key, value in statistics.items() %}
           <tr>
             <td>{{ key | title}}</td>

@@ -1,5 +1,7 @@
 name: Errors demo
 stop_on_errors: no
+tags:
+- example
 tasks:
 - name: Run Failing command
   run_command:
