@@ -8,10 +8,14 @@ on:
     - master
 
 jobs:
-  unit-test:
-    runs-on: ubuntu-latest
+  unittest:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os:
+        - macos-latest
+        - windows-latest
+        - ubuntu-latest
         python-version:
         - "3.6"
         - "3.7"
@@ -38,4 +42,4 @@ jobs:
           ${{github.workspace}}/coverage.xml:coverage.py
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
-      if: matrix.python-version == '3.7'
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.7'
