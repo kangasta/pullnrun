@@ -18,7 +18,8 @@
       "name": "Delete script",
       "run_command": {
         "command": ["rm", "-f", "fizzbuzz.py"]
-      }
+      },
+      "stop_on_errors": false
     },
     {
       "name": "Fetch script",
