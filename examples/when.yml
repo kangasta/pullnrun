@@ -5,21 +5,24 @@ tags:
 tasks:
 - name: Failing task
   run_command:
-    command: cat .not_found
+    command:
+    - "{{pullnrun_python_executable }}"
+    - -c
+    - exit(1)
   register: fail_result
 - name: Successful task
-  run_command:
-    command: echo Hello
+  echo:
+    message: Hello
   register: success_result
   when: not fail_result.success
 - name: When with name
-  run_command:
-    command: echo asd
+  echo:
+    message: asd
   when: fail_result.success
-- run_command:
-    command: echo asd
+- echo:
+    message: asd
   when: "not success_result.success"
 - name: When with undefined var
-  run_command:
-    command: echo asd
+  echo:
+    message: asd
   when: undefined_var == 3

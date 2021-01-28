@@ -26,6 +26,16 @@ class TestExit(Exception):
         super().__init__()
         self.exit_code = exit_code
 
+class TempWorkDir(TemporaryDirectory):
+    def __enter__(self):
+        self._prev_dir = os.getcwd()
+        os.chdir(self.name)
+        return self.name
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.chdir(self._prev_dir)
+        super().__exit__(exc_type, exc_val, exc_tb)
+
 def exit_mock_implementation(exit_code):
     raise TestExit(exit_code)
 
@@ -67,8 +77,7 @@ class MainTest(TestCase):
     @patch('builtins.exit')
     @patch('builtins.print')
     def test_main_pull_http(self, print_mock, exit_mock):
-        with TemporaryDirectory() as tmp_dir_path:
-            os.chdir(tmp_dir_path)
+        with TempWorkDir():
             with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/fizzbuzz.json']):
                 entrypoint()
 
@@ -77,8 +86,7 @@ class MainTest(TestCase):
     @patch('builtins.exit')
     @patch('builtins.print')
     def test_main_pull_git(self, print_mock, exit_mock):
-        with TemporaryDirectory() as tmp_dir_path:
-            os.chdir(tmp_dir_path)
+        with TempWorkDir():
             with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/fizzbuzz_git.json']):
                 entrypoint()
 
@@ -89,8 +97,7 @@ class MainTest(TestCase):
     @patch('pullnrun.builtin._push.request')
     def test_main_push_http(self, request_mock, print_mock, exit_mock):
         request_mock.side_effect = request_mock_implementation
-        with TemporaryDirectory() as tmp_dir_path:
-            os.chdir(tmp_dir_path)
+        with TempWorkDir():
             with open('test_file.txt', 'w') as f:
                 f.write('test_content')
 
@@ -105,9 +112,7 @@ class MainTest(TestCase):
         console = TestConsole()
         print_mock.side_effect = console.print_mock_implementation
 
-        with TemporaryDirectory() as tmp_dir_path:
-            os.chdir(tmp_dir_path)
-
+        with TempWorkDir():
             with patch('sys.argv', ['pullnrun', f'{TST_DIR}/invalid_tasks.yml']):
                 entrypoint()
 
@@ -120,7 +125,7 @@ class MainTest(TestCase):
 
     @patch('builtins.exit')
     @patch('builtins.print')
-    def test_main_invalid_task_SOE(self, print_mock, exit_mock):
+    def test_main_invalid_task_stop_on_errors(self, print_mock, exit_mock):
         console = TestConsole()
         print_mock.side_effect = console.print_mock_implementation
 
@@ -129,8 +134,7 @@ class MainTest(TestCase):
             tasks = plan.get('tasks')
 
         for task in tasks:
-            with TemporaryDirectory() as tmp_dir_path:
-                os.chdir(tmp_dir_path)
+            with TempWorkDir() as tmp_dir_path:
                 with open('plan.yml', 'w') as f:
                     json.dump(dict(tasks=[task]), f)
 
@@ -145,9 +149,7 @@ class MainTest(TestCase):
         console = TestConsole()
         print_mock.side_effect = console.print_mock_implementation
 
-        with TemporaryDirectory() as tmp_dir_path:
-            os.chdir(tmp_dir_path)
-
+        with TempWorkDir():
             with patch('sys.argv', ['pullnrun', f'{TST_DIR}/../examples/when.yml']):
                 entrypoint()
 
