@@ -38,4 +38,4 @@ jobs:
           ${{github.workspace}}/coverage.xml:coverage.py
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
-      if: github.ref == 'refs/heads/main' && matrix.python-version == '3.7'
+      if: matrix.python-version == '3.7'
