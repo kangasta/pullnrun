@@ -1,8 +1,21 @@
+import os
+from tempfile import TemporaryDirectory
 import traceback
 
 from .builtin import functions
 from .utils.console import JsonStreams, detail
 from .utils.task import parse_task, parse_return_value
+
+
+class TempWorkDir(TemporaryDirectory):
+    def __enter__(self):
+        self._prev_dir = os.getcwd()
+        os.chdir(self.name)
+        return self.name
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.chdir(self._prev_dir)
+        super().__exit__(exc_type, exc_val, exc_tb)
 
 
 def execute_task(task_data, plan_settings, env):

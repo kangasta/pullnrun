@@ -52,7 +52,7 @@ def _prefix_if(str_in, prefix, condition):
     return f'{prefix}{str_in}' if condition else str_in
 
 
-def generate_report(plan_return_value, settings=DEFAULT_SETTINGS):
+def generate_report(plan_return_value, output_dir, settings=DEFAULT_SETTINGS):
     console = JsonStreams(settings.log_to_console)
 
     env = Environment(loader=PackageLoader('pullnrun'))
@@ -61,7 +61,7 @@ def generate_report(plan_return_value, settings=DEFAULT_SETTINGS):
     stream = template.stream(**plan_return_value)
 
     report_filename = 'pullnrun_report.html'
-    with open(report_filename, 'w') as f:
+    with open(f'{output_dir}/{report_filename}', 'w') as f:
         stream.dump(f)
 
     console.log(f'Log available in {os.path.realpath(report_filename)}')

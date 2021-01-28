@@ -1,12 +1,13 @@
 from argparse import ArgumentParser
 from datetime import datetime
 import json
+import os
 import sys
 import yaml
 
 from ._version import __version__
 from .builtin import log_versions
-from .execute import execute_task
+from .execute import TempWorkDir, execute_task
 from .utils.console import JsonStreams, detail
 from .utils.data import Meta, Settings, DEFAULT_SETTINGS_DICT, Statistics
 from .utils.template import Environment
@@ -32,6 +33,10 @@ def get_args():
         '-t', '--tags',
         type=str,
         help='Comma separated list of tags to describe the environment.')
+    parser.add_argument(
+        '-T', '--temp-work-dir',
+        action='store_true',
+        help='Execute plan in a temporary directory.')
     parser.add_argument(
         '--version',
         action='store_true',
@@ -68,7 +73,8 @@ LOG_STATISTICS = dict(
         plan_return_value="{{ pullnrun_plan_return_value }}"))
 GENERATE_REPORT = dict(
     name='Generate HTML report', generate_report=dict(
-        plan_return_value="{{ pullnrun_plan_return_value }}"),
+        plan_return_value="{{ pullnrun_plan_return_value }}",
+        output_dir="{{ pullnrun_execdir }}"),
     when="pullnrun_generate_report")
 
 
@@ -80,7 +86,7 @@ def _get_log_builtin_vars(dict_in):
             value in dict_in.items() if key.startswith('pullnrun_')})
 
 
-def main(plan, report, env_tags=None):
+def main(plan, report, env_tags=None, execdir=None):
     try:
         validate_plan(plan)
     except Exception as e:
@@ -101,6 +107,8 @@ def main(plan, report, env_tags=None):
     console.log(meta.description)
 
     env.register('pullnrun_python_executable', sys.executable)
+    env.register('pullnrun_execdir', execdir or os.getcwd())
+    env.register('pullnrun_workdir', os.getcwd())
     env.register('pullnrun_sys_platform', sys.platform)
     env.register('pullnrun_generate_report', report)
     env.register('pullnrun_environment_tags', env_tags or [])
@@ -173,6 +181,13 @@ def entrypoint():
         exit(NO_PLAN)
 
     tags = args.tags.split(',') if args.tags else None
-    plan = main(plan, args.report, tags)
+
+    execdir = os.getcwd()
+    if args.temp_work_dir:
+        with TempWorkDir():
+            plan = main(plan, args.report, tags, execdir)
+    else:
+        plan = main(plan, args.report, tags, execdir)
+
     stats = Statistics(plan.get('statistics'))
     exit(stats.error + stats.fail)

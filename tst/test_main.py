@@ -1,7 +1,6 @@
 import json
 import os
 from sys import stdout
-from tempfile import TemporaryDirectory
 import yaml
 
 from unittest import TestCase
@@ -9,6 +8,7 @@ from unittest.mock import patch
 
 from _push_target import request_mock_implementation
 
+from pullnrun.execute import TempWorkDir
 from pullnrun.main import entrypoint, NO_PLAN, INVALID_PLAN
 from pullnrun import __version__
 
@@ -25,16 +25,6 @@ class TestExit(Exception):
     def __init__(self, exit_code):
         super().__init__()
         self.exit_code = exit_code
-
-class TempWorkDir(TemporaryDirectory):
-    def __enter__(self):
-        self._prev_dir = os.getcwd()
-        os.chdir(self.name)
-        return self.name
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        os.chdir(self._prev_dir)
-        super().__exit__(exc_type, exc_val, exc_tb)
 
 def exit_mock_implementation(exit_code):
     raise TestExit(exit_code)
@@ -156,3 +146,14 @@ class MainTest(TestCase):
         exit_mock.assert_called_with(0)
         self.assertRegex(console.content, r'Skipped:\s*3')
         self.assertRegex(console.content, r'Ignored:\s*1')
+
+    @patch('builtins.exit')
+    @patch('builtins.print')
+    def test_main_tmp_work_dir(self, print_mock, exit_mock):
+        with TempWorkDir():
+            with patch('sys.argv', ['pullnrun', '-T', '--report', f'{TST_DIR}/../examples/fizzbuzz.json']):
+                entrypoint()
+
+            dir_ = os.listdir()
+            self.assertIn('pullnrun_report.html', dir_)
+            self.assertNotIn('fizzbuzz.py', dir_)
