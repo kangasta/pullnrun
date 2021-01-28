@@ -1,6 +1,7 @@
 # pullnrun
 
-[![Build Status](https://travis-ci.org/kangasta/pullnrun.svg?branch=master)](https://travis-ci.org/kangasta/pullnrun)
+![CI](https://github.com/kangasta/pullnrun/workflows/CI/badge.svg)
+![Release](https://github.com/kangasta/pullnrun/workflows/Release/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/7198c6ec9229ca477164/maintainability)](https://codeclimate.com/github/kangasta/pullnrun/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7198c6ec9229ca477164/test_coverage)](https://codeclimate.com/github/kangasta/pullnrun/test_coverage)
 
