@@ -28,10 +28,11 @@ setuptools.setup(
     scripts=["bin/pullnrun"],
     install_requires=[
         "importlib_resources; python_version<'3.7'",
-        "Jinja2~=2.0",
+        "Jinja2~=3.0",
         "jsonschema~=3.0",
-        "pyyaml~=5.0",
+        "pyyaml~=6.0",
         "requests~=2.0",
+        "ciou~=0.8",
     ],
     classifiers=(
         "Programming Language :: Python :: 3",

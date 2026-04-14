@@ -1,29 +1,15 @@
-import shlex
-from subprocess import run
+from ciou.streams import run
 
-from pullnrun.utils.console import JsonStreams, command_as_str
 from pullnrun.utils.data import DEFAULT_SETTINGS
 from pullnrun.utils.task import parse_return_value
 
 
 def run_command(command, settings=DEFAULT_SETTINGS, **kwargs):
-    if isinstance(command, str):
-        command = shlex.split(command)
-
-    with JsonStreams(
-        log_to_console=settings.log_to_console
-    ) as (stdout, stderr, streams):
-        streams.push('stdin', text=command_as_str(command))
-        process = run(
-            command,
-            stderr=stderr,
-            stdout=stdout,
-            bufsize=0,
-            **kwargs)
+    result = run(command, log_to_console=settings.log_to_console, **kwargs)
 
     return dict(
-        success=process.returncode == 0,
-        console_data=streams.read(wait=True),
+        success=result.success,
+        console_data=result.console,
     )
 
 

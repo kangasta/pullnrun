@@ -1,10 +1,10 @@
 from os import path
 from shutil import unpack_archive
 
+from ciou.streams import Streams
 from requests import request
 
 from pullnrun.utils.data import DEFAULT_SETTINGS
-from pullnrun.utils.console import JsonStreams
 
 from ._run import run_script
 
@@ -17,7 +17,7 @@ def _write_to_file(response, filename):
 
 
 def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
-    console = JsonStreams(settings.log_to_console)
+    console = Streams(settings.log_to_console)
     console.input(f'# Pull repository from {url}')
 
     if not target:
@@ -54,30 +54,30 @@ def pull_http(
         extract=False,
         settings=DEFAULT_SETTINGS,
         **kwargs):
-    console = JsonStreams(settings.log_to_console)
+    console = Streams(settings.log_to_console)
     console.input(f'# Pull {filename or "file"} from {url}')
 
     if not filename:
         filename = url.split('/')[-1]
-        console.log(f'No filename defined, using {filename}.')
+        console.output(f'No filename defined, using {filename}.')
 
     try:
         with request(method, url, stream=True, **kwargs) as r:
             status_code = r.status_code
-            console.log(f'{method.title()} {filename} returned {status_code}.')
+            console.output(f'{method.title()} {filename} returned {status_code}.')
 
             r.raise_for_status()
             _write_to_file(r, filename)
-            console.log(f'Writing {filename} completed.')
+            console.output(f'Writing {filename} completed.')
     except Exception as e:
         console.error(f'Pulling {filename} failed: {str(e)}')
         return dict(success=False, console_data=console.data, )
 
     if extract:
         try:
-            console.log('Unpacking archive.')
+            console.output('Unpacking archive.')
             unpack_archive(filename)
-            console.log('Unpacking succeeded.')
+            console.output('Unpacking succeeded.')
         except Exception as e:
             console.error(f'Unpacking failed: {str(e)}')
             return dict(success=False, console_data=console.data, )

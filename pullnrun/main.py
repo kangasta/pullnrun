@@ -1,14 +1,16 @@
 from argparse import ArgumentParser
-from datetime import datetime
 import json
 import os
 import sys
 import yaml
 
+from ciou.streams import Streams
+from ciou.time import utcnow
+
 from ._version import __version__
 from .builtin import log_versions
 from .execute import TempWorkDir, execute_task
-from .utils.console import JsonStreams, detail
+from .utils.console import detail
 from .utils.data import Meta, Settings, DEFAULT_SETTINGS_DICT, Statistics
 from .utils.template import Environment
 from .validate import validate_plan
@@ -96,15 +98,15 @@ def main(plan, report, env_tags=None, execdir=None):
     env = Environment()
     plan_settings = Settings(DEFAULT_SETTINGS_DICT)(plan)
     stats = Statistics()
-    console = JsonStreams(plan_settings.log_to_console)
+    console = Streams(plan_settings.log_to_console)
 
-    started = datetime.utcnow()
+    started = utcnow()
     tasks = plan.get('tasks')
     plan_tags = plan.get('tags')
     meta = Meta(plan)
 
     console.input(f'# Start plan execution{detail(meta.name)}')
-    console.log(meta.description)
+    console.output(meta.description)
 
     env.register('pullnrun_python_executable', sys.executable)
     env.register('pullnrun_execdir', execdir or os.getcwd())
@@ -139,7 +141,7 @@ def main(plan, report, env_tags=None, execdir=None):
 
     env.register('pullnrun_task_index', None)
 
-    elapsed = (datetime.utcnow() - started).total_seconds()
+    elapsed = (utcnow() - started).total_seconds()
     console.input(text=f'# Plan execution completed{detail(meta.name)}')
 
     plan_return_value = dict(
