@@ -41,7 +41,7 @@ def pull_git(url, target=None, branch=None, settings=DEFAULT_SETTINGS):
     ], settings, cwd=target)
 
     if target == '.':
-        commit = r.get('console_data')[-1].get('text')
+        commit = r.get('console_data')[-1].text
         r['vars'] = dict(pullnrun_git_commit=commit)
 
     return r
