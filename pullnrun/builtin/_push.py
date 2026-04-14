@@ -1,6 +1,6 @@
+from ciou.streams import Streams
 from requests import request
 
-from pullnrun.utils.console import JsonStreams
 from pullnrun.utils.data import DEFAULT_SETTINGS
 
 
@@ -10,7 +10,7 @@ def push_http(
         filename=None,
         settings=DEFAULT_SETTINGS,
         **kwargs):
-    console = JsonStreams(settings.log_to_console)
+    console = Streams(settings.log_to_console)
     console.input(f'# Push {filename or "data"} to {url}')
 
     try:
@@ -20,7 +20,7 @@ def push_http(
         else:
             r = request(method, url, **kwargs)
 
-        console.log(
+        console.output(
             f'{method.title()} {filename or "data"} returned {r.status_code}.')
         r.raise_for_status()
     except Exception as e:

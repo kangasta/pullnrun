@@ -2,8 +2,10 @@ import os
 from tempfile import TemporaryDirectory
 import traceback
 
+from ciou.streams import Streams
+
 from .builtin import functions
-from .utils.console import JsonStreams, detail
+from .utils.console import detail
 from .utils.task import parse_task, parse_return_value
 
 
@@ -19,7 +21,7 @@ class TempWorkDir(TemporaryDirectory):
 
 
 def execute_task(task_data, plan_settings, env):
-    console = JsonStreams(plan_settings.log_to_console)
+    console = Streams(plan_settings.log_to_console)
 
     task = parse_task(task_data, env, plan_settings)
     task_progress = f' {task.index}' if task.index else ''
@@ -33,7 +35,7 @@ def execute_task(task_data, plan_settings, env):
 
     console.input(
         f'# Execute task{task_progress}: {task.name or task.function}')
-    console.log(task.description)
+    console.output(task.description)
 
     function = functions.get(task.function)
     if not function:

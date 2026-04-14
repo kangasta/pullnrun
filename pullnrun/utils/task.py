@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from ciou.time import utcnow
 from jinja2.exceptions import UndefinedError
 
 from .data import Data, Meta
@@ -9,7 +8,7 @@ class Task(Data):
     def __init__(self, meta, function_name, parameters, settings, error=None):
         super().__init__(dict(
             **meta.json,
-            started=datetime.utcnow(),
+            started=utcnow(),
             function=function_name,
             parameters=parameters,
             settings=settings,
@@ -28,8 +27,8 @@ class Task(Data):
 
         return dict(
             **json,
-            elapsed=(datetime.utcnow() - self.started).total_seconds(),
-            console_data=console.data,
+            elapsed=(utcnow() - self.started).total_seconds(),
+            console_data=console.data.to_serializable(),
             result=result,
             return_value=return_value,
         )
