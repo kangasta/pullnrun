@@ -64,7 +64,8 @@ def pull_http(
     try:
         with request(method, url, stream=True, **kwargs) as r:
             status_code = r.status_code
-            console.output(f'{method.title()} {filename} returned {status_code}.')
+            console.output(
+                f'{method.title()} {filename} returned {status_code}.')
 
             r.raise_for_status()
             _write_to_file(r, filename)
